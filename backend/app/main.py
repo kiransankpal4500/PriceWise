@@ -1,0 +1,53 @@
+import logging
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
+from app.api.v1.api import api_router
+from app.workers.scheduler import start_scheduler, stop_scheduler
+
+logging.basicConfig(level=logging.INFO if not settings.DEBUG else logging.DEBUG)
+logger = logging.getLogger("pricewise")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Initializing PriceWise platform...")
+    start_scheduler()
+    yield
+    logger.info("Shutting down PriceWise platform...")
+    stop_scheduler()
+
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="AI-powered electronics price comparison and shopping intelligence platform.",
+    version="1.0.0",
+    openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
+    docs_url=f"{settings.API_V1_PREFIX}/docs",
+    redoc_url=f"{settings.API_V1_PREFIX}/redoc",
+    lifespan=lifespan,
+)
+
+# Set up CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include API v1 router
+app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "project": settings.PROJECT_NAME,
+        "status": "OPERATIONAL",
+        "version": "1.0.0",
+        "docs_url": f"{settings.API_V1_PREFIX}/docs",
+        "api_v1": settings.API_V1_PREFIX,
+    }
