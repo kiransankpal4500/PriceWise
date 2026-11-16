@@ -11,6 +11,7 @@ from app.api.v1.endpoints import (
     watchlist,
     alerts,
     assistant,
+    admin,
 )
 
 api_router = APIRouter()
@@ -26,3 +27,4 @@ api_router.include_router(prices.router, prefix="/products", tags=["Price Intell
 api_router.include_router(watchlist.router, prefix="/watchlist", tags=["Watchlist"])
 api_router.include_router(alerts.router, prefix="/alerts", tags=["Price Alerts"])
 api_router.include_router(assistant.router, prefix="/assistant", tags=["AI Shopping Assistant"])
+api_router.include_router(admin.router, prefix="/admin", tags=["Administration & Sync"])

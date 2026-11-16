@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Redmi Note 13 Pro+ 5G",
+    "category_slug": "smartphones",
+    "brand_slug": "xiaomi",
+    "model_number": "23090RA98I",
+    "variant_name": "256GB Storage, 8GB RAM, Fusion Black",
+    "ram": "8GB",
+    "storage": "256GB",
+    "color": "Fusion Black",
+    "mrp": 33999.00,
+    "price": 27999.00,
+    "image_url": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800",
+    "description": "Curved 1.5K AMOLED display with 200MP OIS camera and 120W HyperCharge.",
+    "specifications": {
+      "Processor": "MediaTek Dimensity 7200 Ultra (4nm)",
+      "Main Camera": "200MP Samsung ISOCELL HP3 with OIS",
+      "Charging": "120W HyperCharge (100% in 19 mins)",
+      "Durability": "IP68 dust and water resistance"
+    }
+  },
+  {
+    "name": "Bose QuietComfort Ultra Headphones",
+    "category_slug": "headphones",
+    "brand_slug": "bose",
+    "model_number": "880066-0100",
+    "variant_name": "Standard, Black",
+    "color": "Black",
+    "mrp": 35900.00,
+    "price": 31900.00,
+    "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+    "description": "World-class noise cancellation, breakthrough spatialized audio, and CustomTune technology.",
+    "specifications": {
+      "Noise Cancellation": "Active Noise Cancelling with Quiet and Aware Modes",
+      "Battery Life": "Up to 24 hours of listening time",
+      "Spatial Audio": "Bose Immersive Audio built-in"
+    }
+  }
+]

@@ -164,3 +164,15 @@ async def test_ai_assistant_grounding():
         assert r_inj.status_code == 200
         inj_data = r_inj.json()
         assert "prohibited instructions" in inj_data["message"].lower() or "guardrails" in inj_data["model_used"].lower()
+
+
+@pytest.mark.asyncio
+async def test_admin_sync_endpoints():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r_sync = await client.post("/api/v1/admin/sync-prices")
+        assert r_sync.status_code == 200
+        assert r_sync.json()["status"] == "COMPLETED"
+
+        r_logs = await client.get("/api/v1/admin/sync-logs")
+        assert r_logs.status_code == 200
+        assert isinstance(r_logs.json(), list)

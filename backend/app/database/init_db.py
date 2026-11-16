@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from app.database.session import engine, AsyncSessionLocal, Base
 from app.models import (
     Category,
@@ -21,21 +21,24 @@ from app.core.security import get_password_hash
 from app.database.seed_data import SEED_CATEGORIES, SEED_BRANDS, SEED_MARKETPLACES, SEED_PRODUCTS
 
 
-async def init_db():
-    print("Creating database tables...", flush=True)
+async def init_db(drop_first: bool = False):
+    print("Initializing database tables...", flush=True)
     async with engine.begin() as conn:
+        if drop_first:
+            await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-    print("Database tables created successfully.", flush=True)
+    print("Database tables initialized.", flush=True)
 
 
-async def seed_database():
-    await init_db()
+async def seed_database(force_refresh: bool = False):
+    await init_db(drop_first=force_refresh)
     async with AsyncSessionLocal() as session:
-        # Check if already seeded
-        result = await session.execute(select(Category))
-        if result.scalars().first():
-            print("Database already contains data. Skipping initial seed.", flush=True)
-            return
+        # Check if already seeded when not forced
+        if not force_refresh:
+            result = await session.execute(select(Category))
+            if result.scalars().first():
+                print("Database already contains data. Use force_refresh=True to re-seed.", flush=True)
+                return
 
         print("Seeding database with categories, brands, and marketplaces...", flush=True)
 
@@ -78,7 +81,7 @@ async def seed_database():
             session.add(mp)
             mp_map[mp.slug] = mp
 
-        # 4. Default Demo User
+        # 4. Demo User
         demo_user = User(
             id=str(uuid.uuid4()),
             email="demo@pricewise.in",
@@ -92,23 +95,28 @@ async def seed_database():
             id=str(uuid.uuid4()),
             user_id=demo_user.id,
             default_budget=80000.00,
-            preferred_brands=["Apple", "Samsung", "Sony"],
-            preferred_categories=["smartphones", "laptops", "headphones"],
+            preferred_brands=["Apple", "Samsung", "Sony", "OnePlus", "Google"],
+            preferred_categories=["smartphones", "laptops", "headphones", "earbuds"],
             priority_weights={"price": 0.35, "specs": 0.30, "rating": 0.20, "reviews": 0.10, "value": 0.05},
         )
         session.add(demo_pref)
 
         await session.flush()
 
-        # 5. Products, Variants, Specifications, Listings, and Historical Price Observations
+        # 5. Canonical products, variants, specs, listings, and price observations
         now = datetime.now(timezone.utc)
-        print("Seeding canonical products, variants, and historical price logs...", flush=True)
+        print(f"Seeding {len(SEED_PRODUCTS)} canonical electronics products with variants and price observations...", flush=True)
 
         for prod_data in SEED_PRODUCTS:
+            category_obj = cat_map.get(prod_data["category_slug"])
+            brand_obj = brand_map.get(prod_data["brand_slug"])
+            if not category_obj or not brand_obj:
+                continue
+
             product = Product(
                 id=str(uuid.uuid4()),
-                category_id=cat_map[prod_data["category_slug"]].id,
-                brand_id=brand_map[prod_data["brand_slug"]].id,
+                category_id=category_obj.id,
+                brand_id=brand_obj.id,
                 name=prod_data["name"],
                 slug=prod_data["slug"],
                 model_number=prod_data["model_number"],
@@ -145,7 +153,10 @@ async def seed_database():
 
                 # Marketplace Listings
                 for list_data in var_data.get("listings", []):
-                    mp = mp_map[list_data["marketplace_slug"]]
+                    mp = mp_map.get(list_data["marketplace_slug"])
+                    if not mp:
+                        continue
+
                     listing = MarketplaceListing(
                         id=str(uuid.uuid4()),
                         variant_id=variant.id,
@@ -153,7 +164,7 @@ async def seed_database():
                         external_id=list_data["external_id"],
                         title=list_data["title"],
                         product_url=list_data["product_url"],
-                        image_url=list_data.get("image_url", prod_data["default_image_url"]),
+                        image_url=prod_data["default_image_url"],
                         current_price=list_data["current_price"],
                         original_mrp=list_data["original_mrp"],
                         availability=list_data["availability"],
@@ -166,8 +177,7 @@ async def seed_database():
                     session.add(listing)
                     await session.flush()
 
-                    # Generate realistic 90-day price history points
-                    # Points: 90 days ago, 60 days ago, 30 days ago, 14 days ago, 7 days ago, now
+                    # 90-day price history observations
                     base_p = float(list_data["current_price"])
                     mrp_p = float(list_data["original_mrp"])
                     history_points = [
@@ -190,42 +200,23 @@ async def seed_database():
                         )
                         session.add(ph)
 
-                    # Add sample verified reviews
-                    sample_reviews = [
-                        {
-                            "author": "Rahul M.",
-                            "rating": 5.0,
-                            "headline": "Exceptional performance and value",
-                            "text": f"Upgraded recently to {product.name} and the build quality, display, and speed have exceeded my expectations.",
-                            "sentiment": "POSITIVE",
-                            "date": now - timedelta(days=20),
-                        },
-                        {
-                            "author": "Pooja S.",
-                            "rating": 4.5,
-                            "headline": "Great daily driver with solid battery life",
-                            "text": "Using this daily for work and multimedia. Battery easily lasts a full day under heavy usage. Highly recommend at this price point.",
-                            "sentiment": "POSITIVE",
-                            "date": now - timedelta(days=10),
-                        },
-                    ]
-                    for rev in sample_reviews:
-                        r = Review(
-                            id=str(uuid.uuid4()),
-                            listing_id=listing.id,
-                            author_name=rev["author"],
-                            rating=rev["rating"],
-                            headline=rev["headline"],
-                            review_text=rev["text"],
-                            is_verified_purchase=True,
-                            review_date=rev["date"],
-                            sentiment=rev["sentiment"],
-                        )
-                        session.add(r)
+                    # Verified reviews
+                    sample_review = Review(
+                        id=str(uuid.uuid4()),
+                        listing_id=listing.id,
+                        author_name="Verified Buyer",
+                        rating=float(list_data["rating"] or 4.5),
+                        headline=f"Great experience with {product.name}",
+                        review_text=f"The build quality and specifications of the {product.name} are excellent at this price point.",
+                        is_verified_purchase=True,
+                        review_date=now - timedelta(days=15),
+                        sentiment="POSITIVE",
+                    )
+                    session.add(sample_review)
 
         await session.commit()
-        print("Database seeded successfully with verified Indian electronics catalog!", flush=True)
+        print("Database successfully seeded and synchronized!", flush=True)
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_database())
+    asyncio.run(seed_database(force_refresh=True))

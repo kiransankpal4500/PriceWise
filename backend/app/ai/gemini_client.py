@@ -39,7 +39,7 @@ class GeminiAIClient:
             if system_instruction:
                 config.system_instruction = system_instruction
 
-            response = self._client.models.generate_content(
+            response = await self._client.aio.models.generate_content(
                 model=self.model_name,
                 contents=prompt,
                 config=config,
