@@ -32,11 +32,12 @@ async def list_products(
     db: AsyncSession = Depends(get_db),
 ):
     stmt = (
-        select(Product, Brand, Category, ProductVariant, MarketplaceListing)
+        select(Product, Brand, Category, ProductVariant, MarketplaceListing, Marketplace)
         .join(Brand, Brand.id == Product.brand_id)
         .join(Category, Category.id == Product.category_id)
         .join(ProductVariant, ProductVariant.product_id == Product.id)
         .join(MarketplaceListing, MarketplaceListing.variant_id == ProductVariant.id)
+        .join(Marketplace, Marketplace.id == MarketplaceListing.marketplace_id)
     )
 
     if category_slug:
@@ -64,7 +65,7 @@ async def list_products(
     seen_products = set()
     summaries: List[ProductSummarySchema] = []
 
-    for p, b, c, v, l in rows:
+    for p, b, c, v, l, mp in rows:
         if p.id in seen_products:
             continue
         seen_products.add(p.id)
@@ -94,6 +95,8 @@ async def list_products(
                 review_count=l.review_count,
                 is_demo=l.is_demo,
                 primary_variant_id=v.id,
+                best_offer_url=l.product_url,
+                best_offer_marketplace=mp.name,
                 price_prediction=pred,
             )
         )
@@ -257,3 +260,21 @@ async def get_product_detail(id_or_slug: str, db: AsyncSession = Depends(get_db)
         price_prediction=pred,
         review_intelligence=review_intel,
     )
+
+
+@router.get("/{id_or_slug}/redirect-best-deal")
+async def redirect_to_best_deal(id_or_slug: str, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(MarketplaceListing)
+        .join(ProductVariant, ProductVariant.id == MarketplaceListing.variant_id)
+        .join(Product, Product.id == ProductVariant.product_id)
+        .where(or_(Product.id == id_or_slug, Product.slug == id_or_slug))
+        .order_by(MarketplaceListing.current_price.asc())
+    )
+    res = await db.execute(stmt)
+    best_listing = res.scalars().first()
+    if not best_listing or not best_listing.product_url:
+        raise HTTPException(status_code=404, detail="No active marketplace deal found for this product")
+
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url=best_listing.product_url, status_code=307)

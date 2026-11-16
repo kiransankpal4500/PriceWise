@@ -115,6 +115,8 @@ export interface ProductSummary {
   review_count?: number;
   is_demo: boolean;
   primary_variant_id: string;
+  best_offer_url?: string;
+  best_offer_marketplace?: string;
   price_prediction?: PricePredictionVerdict;
 }
 

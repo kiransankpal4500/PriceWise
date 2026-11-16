@@ -68,6 +68,16 @@ export default function ProductDetailPage() {
   const currentVariant = product?.variants?.[selectedVariantIndex];
   const isCompared = currentVariant ? hasVariant(currentVariant.id) : false;
 
+  // Dynamically determine the listing with the lowest / best price for the selected variant
+  const bestListing =
+    currentVariant?.listings && currentVariant.listings.length > 0
+      ? [...currentVariant.listings].sort((a, b) => a.current_price - b.current_price)[0]
+      : product?.best_offer;
+
+  const sortedListings = currentVariant?.listings
+    ? [...currentVariant.listings].sort((a, b) => a.current_price - b.current_price)
+    : [];
+
   const { data: priceHistoryData } = useQuery({
     queryKey: ["priceHistory", currentVariant?.id],
     queryFn: () => fetchPriceHistory(currentVariant!.id, 90),
@@ -237,26 +247,29 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {product.best_offer && (
+              {bestListing && (
                 <div className="text-right">
-                  <span className="block text-xs text-slate-400">Sold on</span>
+                  <span className="block text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
+                    Lowest Price Store
+                  </span>
                   <span className="text-sm font-bold text-white">
-                    {product.best_offer.marketplace_name}
+                    {bestListing.marketplace_name}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Guaranteed Direct Redirect to Best Price */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              {product.best_offer && (
+              {bestListing && (
                 <a
-                  href={product.best_offer.product_url}
+                  href={bestListing.product_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-5 py-3.5 text-sm font-extrabold text-white transition-all shadow-lg shadow-emerald-500/25"
+                  title={`Redirect directly to ${bestListing.marketplace_name} with lowest verified price of ${formatINR(bestListing.current_price)}`}
                 >
-                  <span>Buy on {product.best_offer.marketplace_name}</span>
+                  <span>Buy on {bestListing.marketplace_name} • {formatINR(bestListing.current_price)}</span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
               )}
@@ -440,10 +453,24 @@ export default function ProductDetailPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/80">
-              {currentVariant?.listings?.map((l) => (
-                <tr key={l.id} className="hover:bg-slate-800/30 transition-colors">
+              {sortedListings.map((l, idx) => (
+                <tr
+                  key={l.id}
+                  className={`transition-colors ${
+                    idx === 0
+                      ? "bg-emerald-950/20 hover:bg-emerald-950/30 font-medium"
+                      : "hover:bg-slate-800/30"
+                  }`}
+                >
                   <td className="px-6 py-4 font-semibold text-white">
-                    {l.marketplace_name}
+                    <div className="flex items-center gap-2">
+                      <span>{l.marketplace_name}</span>
+                      {idx === 0 && (
+                        <span className="rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                          Lowest Price
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-slate-400">{l.seller_name || "Verified Merchant"}</td>
                   <td className="px-6 py-4">
@@ -470,9 +497,13 @@ export default function ProductDetailPage() {
                       href={l.product_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-blue-300"
+                      className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                        idx === 0
+                          ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
+                          : "text-blue-400 hover:text-blue-300"
+                      }`}
                     >
-                      <span>View Deal</span>
+                      <span>{idx === 0 ? "Buy at Best Price" : "View Deal"}</span>
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   </td>

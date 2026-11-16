@@ -101,6 +101,8 @@ class ProductSummarySchema(BaseModel):
     review_count: Optional[int] = 0
     is_demo: bool = False
     primary_variant_id: str
+    best_offer_url: Optional[str] = None
+    best_offer_marketplace: Optional[str] = None
     price_prediction: Optional[PricePredictionVerdict] = None
 
     model_config = {"from_attributes": True}

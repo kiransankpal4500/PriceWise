@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Scale, Bookmark, Check, ShieldAlert } from "lucide-react";
+import { Star, Scale, Bookmark, Check, ShieldAlert, ExternalLink } from "lucide-react";
 import { ProductSummary } from "@/types";
 import { formatINR } from "@/lib/utils";
 import { useCompareStore } from "@/store/compareStore";
@@ -163,24 +163,48 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        {/* Pricing */}
-        <div className="mt-4 flex items-baseline justify-between pt-3 border-t border-slate-800/80">
-          <div>
-            <span className="text-lg font-bold text-white tracking-tight">
-              {formatINR(product.best_price)}
-            </span>
-            {product.mrp && product.mrp > product.best_price && (
-              <span className="ml-2 text-xs text-slate-500 line-through">
-                {formatINR(product.mrp)}
+        {/* Pricing & Direct Best Price Redirect */}
+        <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-2.5">
+          <div className="flex items-baseline justify-between">
+            <div>
+              <span className="text-lg font-bold text-white tracking-tight">
+                {formatINR(product.best_price)}
+              </span>
+              {product.mrp && product.mrp > product.best_price && (
+                <span className="ml-2 text-xs text-slate-500 line-through">
+                  {formatINR(product.mrp)}
+                </span>
+              )}
+            </div>
+            {product.best_offer_marketplace && (
+              <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                Best on {product.best_offer_marketplace}
               </span>
             )}
           </div>
-          <Link
-            href={`/products/${product.slug}`}
-            className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            Compare Deals →
-          </Link>
+
+          <div className="flex items-center gap-2 pt-1">
+            {product.best_offer_url ? (
+              <a
+                href={product.best_offer_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-3 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/20"
+                title={`Redirect to ${product.best_offer_marketplace || 'store'} with lowest price`}
+              >
+                <span>Buy at Best Price</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : null}
+
+            <Link
+              href={`/products/${product.slug}`}
+              className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+              title="Compare all marketplace offers and technical specs"
+            >
+              Details
+            </Link>
+          </div>
         </div>
       </div>
     </div>
