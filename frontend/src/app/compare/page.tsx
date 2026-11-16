@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   Scale,
@@ -12,13 +13,46 @@ import {
   ExternalLink,
   Plus,
   ArrowRight,
+  Share2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useCompareStore } from "@/store/compareStore";
 import { compareVariants } from "@/lib/api";
 import { formatINR } from "@/lib/utils";
 
-export default function ComparePage() {
-  const { selectedVariantIds, removeVariant, clear } = useCompareStore();
+function CompareContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { selectedVariantIds, setVariants, removeVariant, clear } = useCompareStore();
+  const [copied, setCopied] = useState(false);
+
+  // Sync URL query params with store on initial mount
+  useEffect(() => {
+    const vParam = searchParams.get("v");
+    if (vParam) {
+      const idsFromUrl = vParam.split(",").map((s) => s.trim()).filter(Boolean);
+      if (idsFromUrl.length > 0 && idsFromUrl.join(",") !== selectedVariantIds.join(",")) {
+        setVariants(idsFromUrl.slice(0, 4));
+      }
+    }
+  }, [searchParams]);
+
+  // Update URL query string when comparison list changes
+  useEffect(() => {
+    if (selectedVariantIds.length > 0) {
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("v", selectedVariantIds.join(","));
+      window.history.replaceState({}, "", currentUrl.toString());
+    }
+  }, [selectedVariantIds]);
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/compare?v=${selectedVariantIds.join(",")}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const { data: compareData, isLoading, error } = useQuery({
     queryKey: ["compare", selectedVariantIds],
@@ -60,12 +94,22 @@ export default function ComparePage() {
           </p>
         </div>
 
-        <button
-          onClick={clear}
-          className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-        >
-          Clear Comparison
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleCopyLink}
+            className="flex items-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-950/20 px-4 py-2 text-xs font-semibold text-cyan-400 hover:bg-cyan-950/40 transition-colors"
+          >
+            {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
+            <span>{copied ? "Link Copied!" : "Share Comparison"}</span>
+          </button>
+
+          <button
+            onClick={clear}
+            className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            Clear Comparison
+          </button>
+        </div>
       </div>
 
       {isLoading && (
@@ -183,5 +227,19 @@ export default function ComparePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center text-sm text-slate-400">
+          Loading comparison...
+        </div>
+      }
+    >
+      <CompareContent />
+    </Suspense>
   );
 }

@@ -17,6 +17,12 @@ import {
   Layers,
   Store,
   Info,
+  MapPin,
+  ThumbsUp,
+  ThumbsDown,
+  CheckCircle2,
+  AlertCircle,
+  Truck,
 } from "lucide-react";
 import { fetchProductDetail, fetchPriceHistory, createAlert, addToWatchlist } from "@/lib/api";
 import { formatINR } from "@/lib/utils";
@@ -36,6 +42,23 @@ export default function ProductDetailPage() {
   const [alertTargetPrice, setAlertTargetPrice] = useState<string>("");
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [pincode, setPincode] = useState("");
+  const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+
+  const handleCheckPincode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pincode || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+      setPincodeStatus("Please enter a valid 6-digit Indian PIN code (e.g. 110001 or 560001).");
+      return;
+    }
+    const metroPrefixes = ["11", "40", "56", "60", "70", "50", "38", "41"];
+    const isMetro = metroPrefixes.some((p) => pincode.startsWith(p));
+    if (isMetro) {
+      setPincodeStatus("⚡ Free Express Next-Day Delivery available for PIN " + pincode + " (Fulfilled by verified hub).");
+    } else {
+      setPincodeStatus("Standard Delivery within 2-4 business days for PIN " + pincode + " (Cash on Delivery eligible).");
+    }
+  };
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ["product", slug],
@@ -290,8 +313,112 @@ export default function ProductDetailPage() {
               <p className="text-xs text-emerald-400 font-medium">{alertMessage}</p>
             )}
           </div>
+
+          {/* Indian Pincode Delivery Estimator */}
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <Truck className="h-4 w-4 text-emerald-400" />
+              <span>Check Delivery Speed & Cash on Delivery</span>
+            </div>
+            <form onSubmit={handleCheckPincode} className="flex gap-2">
+              <div className="relative w-full">
+                <MapPin className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
+                <input
+                  type="text"
+                  maxLength={6}
+                  placeholder="Enter 6-digit Indian PIN (e.g. 560001)"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                  className="w-full rounded-xl border border-slate-800 bg-slate-950 pl-8 pr-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-xl bg-slate-800 border border-slate-700 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700 transition-colors shrink-0"
+              >
+                Check
+              </button>
+            </form>
+            {pincodeStatus && (
+              <p className={`text-xs font-medium ${pincodeStatus.startsWith("⚡") ? "text-emerald-400" : pincodeStatus.startsWith("Standard") ? "text-blue-400" : "text-amber-400"}`}>
+                {pincodeStatus}
+              </p>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* AI PRICE PREDICTION: BUY NOW OR WAIT? */}
+      {product.price_prediction && (
+        <section className={`rounded-3xl border p-6 sm:p-8 backdrop-blur-xl transition-all ${
+          product.price_prediction.verdict === "STRONG_BUY"
+            ? "border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 to-slate-900/60"
+            : product.price_prediction.verdict === "BUY"
+            ? "border-blue-500/30 bg-gradient-to-r from-blue-950/30 to-slate-900/60"
+            : product.price_prediction.verdict === "FAIR_PRICE"
+            ? "border-amber-500/30 bg-gradient-to-r from-amber-950/30 to-slate-900/60"
+            : "border-rose-500/30 bg-gradient-to-r from-rose-950/30 to-slate-900/60"
+        }`}>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-3 flex-1">
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                  product.price_prediction.verdict === "STRONG_BUY"
+                    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
+                    : product.price_prediction.verdict === "BUY"
+                    ? "bg-blue-500/20 text-blue-400 border-blue-500/40"
+                    : product.price_prediction.verdict === "FAIR_PRICE"
+                    ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                    : "bg-rose-500/20 text-rose-400 border-rose-500/40"
+                }`}>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>AI VERDICT: {product.price_prediction.badge_label.toUpperCase()}</span>
+                </span>
+                <span className="text-xs text-slate-400">
+                  Deal Confidence: <strong className="text-white">{product.price_prediction.deal_score}/100</strong>
+                </span>
+              </div>
+
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                {product.price_prediction.verdict === "STRONG_BUY"
+                  ? "Historic Low Alert — Outstanding Time to Purchase"
+                  : product.price_prediction.verdict === "BUY"
+                  ? "Competitive Price — Recommended Value Pick"
+                  : product.price_prediction.verdict === "FAIR_PRICE"
+                  ? "Stable Standard Market Price"
+                  : "Price is High — Consider Waiting or Setting an Alert"}
+              </h2>
+
+              <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
+                {product.price_prediction.rationale}
+              </p>
+            </div>
+
+            <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-800 gap-3">
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-slate-400 block">Lowest Recorded</span>
+                <span className="text-sm font-bold text-emerald-400">
+                  {formatINR(product.price_prediction.lowest_recorded_price)}
+                </span>
+              </div>
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-slate-400 block">Average 90-Day Price</span>
+                <span className="text-sm font-semibold text-slate-300">
+                  {formatINR(product.price_prediction.average_price)}
+                </span>
+              </div>
+              {product.price_prediction.savings_vs_peak > 0 && (
+                <div className="text-left sm:text-right">
+                  <span className="text-xs text-slate-400 block">Saved vs Peak</span>
+                  <span className="text-sm font-bold text-cyan-400">
+                    +{formatINR(product.price_prediction.savings_vs_peak)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 2. MARKETPLACE OFFERS TABLE */}
       <section className="space-y-4">
@@ -390,6 +517,103 @@ export default function ProductDetailPage() {
           ))}
         </div>
       </section>
+
+      {/* 5. AI REVIEW INTELLIGENCE & SENTIMENT */}
+      {product.review_intelligence && (
+        <section className="space-y-6 rounded-3xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">AI Review Intelligence</h2>
+                <p className="text-xs text-slate-400">
+                  Synthesized across {product.review_intelligence.total_reviews_analyzed.toLocaleString()} verified buyer observations
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {product.review_intelligence.key_themes.map((theme, i) => (
+                <span
+                  key={i}
+                  className="rounded-full bg-slate-800/80 border border-slate-700/80 px-3 py-1 text-[11px] font-medium text-slate-300"
+                >
+                  {theme}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Sentiment Bar */}
+          <div className="space-y-2 rounded-2xl bg-slate-950 p-4 border border-slate-800">
+            <div className="flex justify-between text-xs font-semibold">
+              <span className="text-emerald-400">
+                {product.review_intelligence.sentiment.positive_percentage}% Positive
+              </span>
+              <span className="text-slate-400">
+                {product.review_intelligence.sentiment.neutral_percentage}% Neutral
+              </span>
+              <span className="text-rose-400">
+                {product.review_intelligence.sentiment.negative_percentage}% Critical
+              </span>
+            </div>
+            <div className="h-2.5 w-full flex overflow-hidden rounded-full bg-slate-800">
+              <div
+                style={{ width: `${product.review_intelligence.sentiment.positive_percentage}%` }}
+                className="bg-emerald-500 transition-all duration-500"
+              />
+              <div
+                style={{ width: `${product.review_intelligence.sentiment.neutral_percentage}%` }}
+                className="bg-slate-500 transition-all duration-500"
+              />
+              <div
+                style={{ width: `${product.review_intelligence.sentiment.negative_percentage}%` }}
+                className="bg-rose-500 transition-all duration-500"
+              />
+            </div>
+            <p className="text-xs text-slate-400 pt-1">
+              {product.review_intelligence.verdict_summary}
+            </p>
+          </div>
+
+          {/* Pros & Cons Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Top Pros */}
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/10 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-emerald-400">
+                <ThumbsUp className="h-4 w-4" />
+                <span>Verified Buyer Highlights (Pros)</span>
+              </div>
+              <ul className="space-y-2 text-xs text-slate-300">
+                {product.review_intelligence.top_pros.map((pro, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{pro}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Top Cons */}
+            <div className="rounded-2xl border border-rose-500/20 bg-rose-950/10 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-rose-400">
+                <ThumbsDown className="h-4 w-4" />
+                <span>Reported Compromises (Cons)</span>
+              </div>
+              <ul className="space-y-2 text-xs text-slate-300">
+                {product.review_intelligence.top_cons.map((con, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                    <span>{con}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

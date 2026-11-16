@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
+from app.intelligence.analytics.price_prediction import PricePredictionVerdict
+from app.intelligence.reviews.analyzer import ReviewIntelligence
 
 
 class CategorySchema(BaseModel):
@@ -99,6 +101,7 @@ class ProductSummarySchema(BaseModel):
     review_count: Optional[int] = 0
     is_demo: bool = False
     primary_variant_id: str
+    price_prediction: Optional[PricePredictionVerdict] = None
 
     model_config = {"from_attributes": True}
 
@@ -119,5 +122,7 @@ class ProductDetailSchema(BaseModel):
     average_price: Optional[float] = None
     total_reviews_analyzed: int = 0
     sentiment_distribution: Dict[str, float] = {}
+    price_prediction: Optional[PricePredictionVerdict] = None
+    review_intelligence: Optional[ReviewIntelligence] = None
 
     model_config = {"from_attributes": True}

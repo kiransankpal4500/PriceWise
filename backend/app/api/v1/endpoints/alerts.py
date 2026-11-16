@@ -10,7 +10,7 @@ from app.models.users import User
 from app.models.tracking import PriceAlert
 from app.models.catalog import Product, ProductVariant
 from app.models.marketplaces import MarketplaceListing
-from app.api.deps import require_current_user
+from app.api.deps import require_current_user, get_current_user
 
 router = APIRouter()
 
@@ -132,3 +132,66 @@ async def delete_alert(
     await db.delete(alert)
     await db.commit()
     return {"status": "SUCCESS", "message": "Price alert deleted"}
+
+
+@router.get("/notifications", response_model=List[AlertResponse])
+async def list_notifications(
+    current_user: Optional[User] = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if not current_user:
+        return []
+
+    stmt = (
+        select(PriceAlert, ProductVariant, Product, MarketplaceListing)
+        .join(ProductVariant, ProductVariant.id == PriceAlert.variant_id)
+        .join(Product, Product.id == ProductVariant.product_id)
+        .join(MarketplaceListing, MarketplaceListing.variant_id == ProductVariant.id)
+        .where(
+            PriceAlert.user_id == current_user.id,
+            PriceAlert.is_triggered == True,
+            PriceAlert.is_active == True,
+        )
+        .order_by(PriceAlert.created_at.desc())
+    )
+    res = await db.execute(stmt)
+    rows = res.all()
+    seen = set()
+    alerts = []
+    for alert, v, p, l in rows:
+        if alert.id in seen:
+            continue
+        seen.add(alert.id)
+        alerts.append(
+            AlertResponse(
+                id=alert.id,
+                variant_id=v.id,
+                product_name=p.name,
+                variant_name=v.name,
+                image_url=p.default_image_url,
+                current_price=float(l.current_price),
+                target_price=float(alert.target_price),
+                is_triggered=True,
+                created_at=alert.created_at,
+            )
+        )
+    return alerts
+
+
+@router.post("/{alert_id}/dismiss")
+async def dismiss_alert(
+    alert_id: str,
+    current_user: User = Depends(require_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    stmt = select(PriceAlert).where(
+        PriceAlert.id == alert_id,
+        PriceAlert.user_id == current_user.id,
+    )
+    res = await db.execute(stmt)
+    alert = res.scalar_one_or_none()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Price alert not found")
+    alert.is_triggered = False
+    await db.commit()
+    return {"status": "SUCCESS", "message": "Notification dismissed"}

@@ -133,6 +133,36 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
+        {/* AI Deal Prediction Badge */}
+        {product.price_prediction && (
+          <div className="mt-2 flex items-center">
+            <span
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                product.price_prediction.verdict === "STRONG_BUY"
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                  : product.price_prediction.verdict === "BUY"
+                  ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                  : product.price_prediction.verdict === "FAIR_PRICE"
+                  ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                  : "bg-rose-500/10 text-rose-400 border-rose-500/30"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  product.price_prediction.verdict === "STRONG_BUY"
+                    ? "bg-emerald-400 animate-pulse"
+                    : product.price_prediction.verdict === "BUY"
+                    ? "bg-blue-400"
+                    : product.price_prediction.verdict === "FAIR_PRICE"
+                    ? "bg-amber-400"
+                    : "bg-rose-400"
+                }`}
+              />
+              {product.price_prediction.badge_label} • {product.price_prediction.deal_score}/100
+            </span>
+          </div>
+        )}
+
         {/* Pricing */}
         <div className="mt-4 flex items-baseline justify-between pt-3 border-t border-slate-800/80">
           <div>

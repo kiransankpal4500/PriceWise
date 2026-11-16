@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Sparkles,
   Search,
@@ -14,15 +15,46 @@ import {
   LogOut,
   Flame,
   Activity,
+  X,
+  ExternalLink,
 } from "lucide-react";
 import { useCompareStore } from "@/store/compareStore";
 import { useAuthStore } from "@/store/authStore";
+import { fetchAlertNotifications, dismissAlertNotification } from "@/lib/api";
+import { formatINR } from "@/lib/utils";
 
 export default function Navbar() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const compareCount = useCompareStore((state) => state.selectedVariantIds.length);
   const { isAuthenticated, user, logout } = useAuthStore();
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["alertNotifications"],
+    queryFn: fetchAlertNotifications,
+    enabled: isAuthenticated,
+    refetchInterval: 30000,
+  });
+
+  const dismissMutation = useMutation({
+    mutationFn: (alertId: string) => dismissAlertNotification(alertId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alertNotifications"] });
+    },
+  });
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +141,87 @@ export default function Navbar() {
           >
             <Activity className="h-4 w-4" />
           </Link>
+
+          {/* Price Drop Notifications Bell */}
+          {isAuthenticated && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+                title="Price Drop Notifications"
+              >
+                <Bell className="h-4 w-4" />
+                {notifications.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                  </span>
+                )}
+              </button>
+
+              {/* Notifications Dropdown Panel */}
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-800 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-cyan-400" />
+                      <span className="text-sm font-bold text-white">Price Drop Alerts</span>
+                      {notifications.length > 0 && (
+                        <span className="rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 text-[10px] font-bold">
+                          {notifications.length} new
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setNotificationsOpen(false)}
+                      className="text-slate-500 hover:text-slate-300"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="mt-3 max-h-72 overflow-y-auto space-y-2.5">
+                    {notifications.length === 0 ? (
+                      <div className="py-6 text-center text-xs text-slate-400">
+                        No new price drop alerts triggered. You will be notified the instant any saved product drops to or below your target price.
+                      </div>
+                    ) : (
+                      notifications.map((alert: any) => (
+                        <div
+                          key={alert.id}
+                          className="flex items-start justify-between gap-3 rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3"
+                        >
+                          <div className="space-y-1">
+                            <span className="block text-xs font-semibold text-white line-clamp-1">
+                              {alert.product_name}
+                            </span>
+                            <span className="block text-[11px] text-slate-400">
+                              {alert.variant_name}
+                            </span>
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="font-bold text-emerald-400">
+                                Now {formatINR(alert.current_price)}
+                              </span>
+                              <span className="text-[10px] text-slate-500">
+                                (Target: {formatINR(alert.target_price)})
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => dismissMutation.mutate(alert.id)}
+                            className="text-slate-500 hover:text-slate-300 p-1"
+                            title="Dismiss"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Auth */}
           {isAuthenticated ? (

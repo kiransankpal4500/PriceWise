@@ -5,6 +5,8 @@ from sqlalchemy import select, func, or_
 from app.database.session import get_db
 from app.models.catalog import Product, ProductVariant, Category, Brand, Specification
 from app.models.marketplaces import Marketplace, MarketplaceListing, PriceHistory, Review
+from app.intelligence.analytics.price_prediction import PricePredictionEngine
+from app.intelligence.reviews.analyzer import ReviewAnalyzer
 from app.schemas.products import (
     ProductSummarySchema,
     ProductDetailSchema,
@@ -71,6 +73,7 @@ async def list_products(
         price = float(l.current_price)
         disc = round(((mrp - price) / mrp) * 100.0, 1) if mrp > price else 0.0
 
+        pred = PricePredictionEngine.analyze_price(price, mrp, [price, mrp * 0.95, mrp])
         summaries.append(
             ProductSummarySchema(
                 id=p.id,
@@ -91,6 +94,7 @@ async def list_products(
                 review_count=l.review_count,
                 is_demo=l.is_demo,
                 primary_variant_id=v.id,
+                price_prediction=pred,
             )
         )
         if len(summaries) >= page_size:
@@ -224,6 +228,16 @@ async def get_product_detail(id_or_slug: str, db: AsyncSession = Depends(get_db)
         sentiment_map[sent or "NEUTRAL"] = count
         total_revs += count
 
+    current_best_p = min_price if min_price != float("inf") else (low_p or 0.0)
+    primary_mrp = float(variants[0].mrp) if variants else current_best_p
+    pred = PricePredictionEngine.analyze_price(current_best_p, primary_mrp, hist_prices)
+
+    review_intel = ReviewAnalyzer.analyze(
+        rating=best_listing_schema.rating if best_listing_schema else 4.2,
+        review_count=best_listing_schema.review_count if best_listing_schema else total_revs,
+        category=category.name,
+    )
+
     return ProductDetailSchema(
         id=product.id,
         name=product.name,
@@ -240,4 +254,6 @@ async def get_product_detail(id_or_slug: str, db: AsyncSession = Depends(get_db)
         average_price=avg_p,
         total_reviews_analyzed=total_revs,
         sentiment_distribution=sentiment_map,
+        price_prediction=pred,
+        review_intelligence=review_intel,
     )

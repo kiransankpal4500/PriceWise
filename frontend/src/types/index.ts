@@ -55,6 +55,47 @@ export interface ProductVariant {
   listings: MarketplaceListing[];
 }
 
+export interface PricePredictionVerdict {
+  verdict: 'STRONG_BUY' | 'BUY' | 'FAIR_PRICE' | 'WAIT';
+  deal_score: number;
+  badge_label: string;
+  color_code: string;
+  rationale: string;
+  lowest_recorded_price: number;
+  highest_recorded_price: number;
+  average_price: number;
+  savings_vs_peak: number;
+  expected_savings: number;
+}
+
+export interface ReviewSentiment {
+  positive_percentage: number;
+  neutral_percentage: number;
+  negative_percentage: number;
+  overall_sentiment: 'POSITIVE' | 'MIXED' | 'CRITICAL';
+}
+
+export interface ReviewIntelligence {
+  total_reviews_analyzed: number;
+  sentiment: ReviewSentiment;
+  top_pros: string[];
+  top_cons: string[];
+  verdict_summary: string;
+  key_themes: string[];
+}
+
+export interface AlertNotification {
+  id: string;
+  variant_id: string;
+  product_name: string;
+  variant_name: string;
+  image_url?: string;
+  current_price: number;
+  target_price: number;
+  is_triggered: boolean;
+  created_at: string;
+}
+
 export interface ProductSummary {
   id: string;
   name: string;
@@ -74,6 +115,7 @@ export interface ProductSummary {
   review_count?: number;
   is_demo: boolean;
   primary_variant_id: string;
+  price_prediction?: PricePredictionVerdict;
 }
 
 export interface ProductDetail {
@@ -92,6 +134,8 @@ export interface ProductDetail {
   average_price?: number;
   total_reviews_analyzed: number;
   sentiment_distribution: Record<string, number>;
+  price_prediction?: PricePredictionVerdict;
+  review_intelligence?: ReviewIntelligence;
 }
 
 export interface SearchResponse {

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { fetchCategories, fetchProducts } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
+import ProductMatchmaker from "@/components/ProductMatchmaker";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   smartphones: <Smartphone className="h-6 w-6" />,
@@ -125,7 +126,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CATEGORIES GRID */}
+      {/* 2. INTERACTIVE PRODUCT MATCHMAKER */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <ProductMatchmaker />
+      </section>
+
+      {/* 3. CATEGORIES GRID */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
