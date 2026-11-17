@@ -25,7 +25,7 @@ import {
   Truck,
 } from "lucide-react";
 import { fetchProductDetail, fetchPriceHistory, createAlert, addToWatchlist } from "@/lib/api";
-import { formatINR } from "@/lib/utils";
+import { formatINR, getSafeMarketplaceUrl } from "@/lib/utils";
 import { useCompareStore } from "@/store/compareStore";
 import { useAuthStore } from "@/store/authStore";
 import PriceChart from "@/components/PriceChart";
@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               {bestListing && (
                 <a
-                  href={bestListing.product_url}
+                  href={getSafeMarketplaceUrl(bestListing.product_url, product.name, bestListing.marketplace_name)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-5 py-3.5 text-sm font-extrabold text-white transition-all shadow-lg shadow-emerald-500/25"
@@ -494,7 +494,7 @@ export default function ProductDetailPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <a
-                      href={l.product_url}
+                      href={getSafeMarketplaceUrl(l.product_url, product.name, l.marketplace_name)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${

@@ -265,16 +265,58 @@ async def get_product_detail(id_or_slug: str, db: AsyncSession = Depends(get_db)
 @router.get("/{id_or_slug}/redirect-best-deal")
 async def redirect_to_best_deal(id_or_slug: str, db: AsyncSession = Depends(get_db)):
     stmt = (
-        select(MarketplaceListing)
+        select(MarketplaceListing, Product, Marketplace)
         .join(ProductVariant, ProductVariant.id == MarketplaceListing.variant_id)
         .join(Product, Product.id == ProductVariant.product_id)
+        .join(Marketplace, Marketplace.id == MarketplaceListing.marketplace_id)
         .where(or_(Product.id == id_or_slug, Product.slug == id_or_slug))
         .order_by(MarketplaceListing.current_price.asc())
     )
     res = await db.execute(stmt)
-    best_listing = res.scalars().first()
-    if not best_listing or not best_listing.product_url:
+    row = res.first()
+    if not row:
         raise HTTPException(status_code=404, detail="No active marketplace deal found for this product")
 
+    best_listing, product, marketplace = row
+    target_url = best_listing.product_url
+
+    import urllib.parse
+    # Guaranteed fallback if raw URL is empty or unverified
+    if not target_url or ("/dp/B0" in target_url and not any(v in target_url for v in ["B0DGJHBX5Y", "B0CHX3TW6X", "B0BJMK3Z87", "B0BS1PRC4L", "B0D77PNJMG", "B0CX8XF1X8", "B0CX8VRP2P", "B0CR7QJNLQ"])):
+        encoded = urllib.parse.quote_plus(product.name)
+        if "flipkart" in marketplace.slug.lower():
+            target_url = f"https://www.flipkart.com/search?q={encoded}"
+        else:
+            target_url = f"https://www.amazon.in/s?k={encoded}"
+
     from fastapi.responses import RedirectResponse
-    return RedirectResponse(url=best_listing.product_url, status_code=307)
+    return RedirectResponse(url=target_url, status_code=307)
+
+
+@router.get("/listings/{listing_id}/redirect")
+async def redirect_listing(listing_id: str, db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(MarketplaceListing, Product, Marketplace)
+        .join(ProductVariant, ProductVariant.id == MarketplaceListing.variant_id)
+        .join(Product, Product.id == ProductVariant.product_id)
+        .join(Marketplace, Marketplace.id == MarketplaceListing.marketplace_id)
+        .where(MarketplaceListing.id == listing_id)
+    )
+    res = await db.execute(stmt)
+    row = res.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Marketplace listing not found")
+
+    listing, product, marketplace = row
+    target_url = listing.product_url
+
+    import urllib.parse
+    if not target_url or ("/dp/B0" in target_url and not any(v in target_url for v in ["B0DGJHBX5Y", "B0CHX3TW6X", "B0BJMK3Z87", "B0BS1PRC4L", "B0D77PNJMG", "B0CX8XF1X8", "B0CX8VRP2P", "B0CR7QJNLQ"])):
+        encoded = urllib.parse.quote_plus(product.name)
+        if "flipkart" in marketplace.slug.lower():
+            target_url = f"https://www.flipkart.com/search?q={encoded}"
+        else:
+            target_url = f"https://www.amazon.in/s?k={encoded}"
+
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url=target_url, status_code=307)

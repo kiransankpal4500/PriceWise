@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, Scale, Bookmark, Check, ShieldAlert, ExternalLink } from "lucide-react";
 import { ProductSummary } from "@/types";
-import { formatINR } from "@/lib/utils";
+import { formatINR, getSafeMarketplaceUrl } from "@/lib/utils";
 import { useCompareStore } from "@/store/compareStore";
 import { useAuthStore } from "@/store/authStore";
 import { addToWatchlist } from "@/lib/api";
@@ -184,18 +184,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           <div className="flex items-center gap-2 pt-1">
-            {product.best_offer_url ? (
-              <a
-                href={product.best_offer_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-3 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/20"
-                title={`Redirect to ${product.best_offer_marketplace || 'store'} with lowest price`}
-              >
-                <span>Buy at Best Price</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ) : null}
+            <a
+              href={getSafeMarketplaceUrl(product.best_offer_url, product.name, product.best_offer_marketplace)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-3 py-2 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/20"
+              title={`Redirect to ${product.best_offer_marketplace || 'store'} with lowest price`}
+            >
+              <span>Buy at Best Price</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
 
             <Link
               href={`/products/${product.slug}`}
