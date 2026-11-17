@@ -124,14 +124,25 @@ async def ingest_products_from_json(file_path: str):
                     )
                     session.add(spec)
 
-            # Create Marketplace Listing
+            # Create Marketplace Listing with guaranteed working URL
+            raw_url = item.get("product_url")
+            if not raw_url or raw_url == "https://www.amazon.in" or "/dp/B0" in raw_url:
+                import urllib.parse
+                clean_term = urllib.parse.quote_plus(prod_name.strip())
+                if "flipkart" in default_mp.slug.lower():
+                    marketplace_url = f"https://www.flipkart.com/search?q={clean_term}"
+                else:
+                    marketplace_url = f"https://www.amazon.in/s?k={clean_term}"
+            else:
+                marketplace_url = raw_url
+
             listing = MarketplaceListing(
                 id=str(uuid.uuid4()),
                 variant_id=variant.id,
                 marketplace_id=default_mp.id,
                 external_id=f"EXT-{uuid.uuid4().hex[:10].upper()}",
                 title=f"{prod_name} ({variant.name})",
-                product_url=item.get("product_url", "https://www.amazon.in"),
+                product_url=marketplace_url,
                 image_url=product.default_image_url,
                 current_price=price,
                 original_mrp=mrp,
