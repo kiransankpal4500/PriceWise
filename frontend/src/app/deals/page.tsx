@@ -3,11 +3,16 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, TrendingDown, Tag, Sparkles } from "lucide-react";
-import { fetchProducts } from "@/lib/api";
+import { fetchProducts, fetchCategories } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 
 export default function DealsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["deals", selectedCategory],
@@ -42,17 +47,17 @@ export default function DealsPage() {
         >
           All Deals
         </button>
-        {["smartphones", "laptops", "headphones", "smartwatches", "televisions"].map((cat) => (
+        {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.slug)}
             className={`rounded-xl px-4 py-2 capitalize transition-all ${
-              selectedCategory === cat
+              selectedCategory === cat.slug
                 ? "bg-amber-500 text-black font-bold shadow-md shadow-amber-500/20"
                 : "border border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white"
             }`}
           >
-            {cat}
+            {cat.name}
           </button>
         ))}
       </div>
