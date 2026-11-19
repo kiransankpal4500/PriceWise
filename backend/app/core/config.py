@@ -18,6 +18,24 @@ class Settings(BaseSettings):
     DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR.as_posix()}/pricewise.db"
     DATABASE_URL_SYNC: str = f"sqlite:///{BASE_DIR.as_posix()}/pricewise.db"
 
+    @field_validator("DATABASE_URL", mode="before")
+    def fix_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql+asyncpg://", 1)
+            elif v.startswith("postgresql://") and not v.startswith("postgresql+"):
+                return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+        if isinstance(v, str):
+            if v.strip() == "*":
+                return ["*"]
+            if not v.startswith("["):
+                return [i.strip() for i in v.split(",") if i.strip()]
+        return v
+
     # Security & JWT
     SECRET_KEY: str = "pricewise-super-secret-key-change-in-production-min32chars"
     ALGORITHM: str = "HS256"
