@@ -2,6 +2,7 @@ import sqlite3
 
 # Curated exact product URLs fetched via QuickCommerceAPI & direct verified marketplace listings
 EXACT_PRODUCT_URLS = {
+    # Original Catalog Products
     "apple-iphone-16": {
         "amazon": "https://www.amazon.in/dp/B0DGJHBX5Y",
         "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBH4DQFSAXNVHME"
@@ -89,6 +90,48 @@ EXACT_PRODUCT_URLS = {
     },
     "sony-wh-ch720n-noise-cancelling": {
         "amazon": "https://www.amazon.in/dp/B0BS1PRC4L"
+    },
+
+    # Quick Commerce Additions (Blinkit, Zepto & Amazon)
+    "boat-airdopes-311-pro-tws-earbuds": {
+        "blinkit": "https://blinkit.com/prn/x/prid/553801",
+        "amazon": "https://www.amazon.in/dp/B0D5DXP67N"
+    },
+    "noise-colorfit-pulse-2-max-smartwatch": {
+        "zepto": "https://www.zepto.com/pn/noise-colorfit-pulse-2-max-smartwatch-womens-edition-bluetooth-calling-1-85-display-100-sports-mode-rose-pink/pvid/cf228a1a-9a55-464e-81b1-377772f7e86f",
+        "amazon": "https://www.amazon.in/dp/B0B6BM372Q"
+    },
+    "noisefit-vortex-plus-smartwatch": {
+        "zepto": "https://www.zepto.com/pn/noise-noisefit-vortex-plus-smartwatch-jet-black/pvid/b755ec5d-30a7-4fa0-9604-ca55112ffd0e",
+        "amazon": "https://www.amazon.in/dp/B0CKZ53N5T"
+    },
+    "logitech-m171-optical-wireless-mouse": {
+        "blinkit": "https://blinkit.com/prn/x/prid/569693",
+        "amazon": "https://www.amazon.in/dp/B01B7BE5M4"
+    },
+    "logitech-g102-light-sync-wired-gaming-mouse": {
+        "blinkit": "https://blinkit.com/prn/x/prid/548334",
+        "amazon": "https://www.amazon.in/dp/B087LXCTFJ"
+    },
+    "ambrane-magsafe-wireless-10000mah-power-bank": {
+        "blinkit": "https://blinkit.com/prn/x/prid/627162",
+        "amazon": "https://www.amazon.in/dp/B0C3CG7K1L"
+    },
+    "boat-storm-blaze-smart-watch": {
+        "zepto": "https://www.zepto.com/pn/boat-storm-blaze-smart-watch-hd-display-bt-calling-ip68-dust-splash-sweat-resistant-active-black/pvid/246590a9-adf7-49d4-a9e3-ff7a8cc55881",
+        "amazon": "https://www.amazon.in/dp/B0B5DK9Z2V"
+    },
+    "apple-earpods-usb-c": {
+        "blinkit": "https://blinkit.com/prn/x/prid/619386",
+        "amazon": "https://www.amazon.in/dp/B0CHX436HW"
+    },
+    "portronics-toad-23-optical-wireless-mouse": {
+        "blinkit": "https://blinkit.com/prn/x/prid/530039",
+        "amazon": "https://www.amazon.in/dp/B09J97D2M3"
+    },
+    "hammer-drop-5w-wireless-bluetooth-speaker": {
+        "blinkit": "https://blinkit.com/prn/x/prid/672101",
+        "amazon": "https://www.amazon.in/dp/B0CH1G8Z7H"
     }
 }
 
@@ -106,18 +149,20 @@ def apply_exact_links():
     rows = cur.fetchall()
 
     updated = 0
+    missing = 0
     for listing_id, p_slug, p_name, m_slug in rows:
-        m_key = "amazon" if "amazon" in m_slug else "flipkart"
+        m_key = m_slug.lower()
         if p_slug in EXACT_PRODUCT_URLS and m_key in EXACT_PRODUCT_URLS[p_slug]:
             final_url = EXACT_PRODUCT_URLS[p_slug][m_key]
             cur.execute("UPDATE marketplace_listings SET product_url = ? WHERE id = ?", (final_url, listing_id))
             updated += 1
         else:
             print(f"Warning: No exact link configured for {p_slug} ({m_key})")
+            missing += 1
 
     conn.commit()
     conn.close()
-    print(f"Successfully applied exact product URLs to {updated} listings across the entire catalog!")
+    print(f"Successfully applied exact product URLs to {updated} listings (missing: {missing}) across the entire catalog!")
 
 if __name__ == "__main__":
     apply_exact_links()

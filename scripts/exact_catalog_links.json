@@ -1,29 +1,30 @@
 {
+  "apple-iphone-16": {
+    "amazon": "https://www.amazon.in/dp/B0DGJHBX5Y",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBH4DQFSAXNVHME"
+  },
+  "apple-airpods-pro-2-usb-c": {
+    "amazon": "https://www.amazon.in/dp/B0CHX3TW6X",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHAGBGS9SQEMPT"
+  },
+  "apple-ipad-10th-generation": {
+    "amazon": "https://www.amazon.in/dp/B0BJMK3Z87",
+    "flipkart": "https://www.flipkart.com/apple-ipad-10th-gen-64-gb-rom-10-9-inch-wi-fi-only-pink/p/itmaf20456d05879"
+  },
+  "apple-macbook-air-13-m3": {
+    "amazon": "https://www.amazon.in/dp/B0CX23V2ZH",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGYP5GWNZHN8FC"
+  },
+  "apple-watch-series-10-46mm": {
+    "amazon": "https://www.amazon.in/dp/B0FQFJNV2Q",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=SMWGWHZEYZZG2WAG"
+  },
   "amd-ryzen-7-7800x3d": {
     "amazon": "https://www.amazon.in/dp/B0BTZB7F88"
   },
   "asus-tuf-gaming-f15": {
     "amazon": "https://www.amazon.in/dp/B0CR7QJNLQ",
     "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGPFPCY3YUVRWZ"
-  },
-  "apple-airpods-pro-2-usb-c": {
-    "amazon": "https://www.amazon.in/dp/B0CHX3TW6X",
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHGG6KSNDDYF9C"
-  },
-  "apple-macbook-air-13-m3": {
-    "amazon": "https://www.amazon.in/dp/B0GR1K8S8H",
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGYP5GWNZHN8FC"
-  },
-  "apple-watch-series-10-46mm": {
-    "amazon": "https://www.amazon.in/dp/B0D9MNL7CX"
-  },
-  "apple-ipad-10th-generation": {
-    "amazon": "https://www.amazon.in/dp/B0BJMK3Z87",
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=TABG3YZNZP7T59SN"
-  },
-  "apple-iphone-16": {
-    "amazon": "https://www.amazon.in/dp/B0DGJHBX5Y",
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBH4DQFSAXNVHME"
   },
   "bose-quietcomfort-ultra-headphones-ab1daf": {
     "amazon": "https://www.amazon.in/dp/B0CCZ1HQ39"
@@ -32,10 +33,10 @@
     "amazon": "https://www.amazon.in/dp/B0DSFQZTVW"
   },
   "google-pixel-9": {
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBHPHNVEC2P4WV3"
+    "flipkart": "https://www.flipkart.com/google-pixel-9-peony-256-gb/p/itmdfee129571238?pid=MOBH2HJGNG6PVUYH"
   },
   "lg-oled-evo-c4-55-inch": {
-    "amazon": "https://www.amazon.in/dp/B0CPV3KPNB"
+    "amazon": "https://www.amazon.in/dp/B0D1VHXXZ2"
   },
   "lg-ultragear-27-inch-qhd-oled": {
     "amazon": "https://www.amazon.in/dp/B0D7HHPW2W"
@@ -44,19 +45,19 @@
     "amazon": "https://www.amazon.in/dp/B0G71G2F8L"
   },
   "nvidia-geforce-rtx-4070-super-12gb": {
-    "amazon": "https://www.amazon.in/dp/B0BNP2CMXM"
+    "amazon": "https://www.amazon.in/dp/B0DZF2QZSM"
   },
   "oneplus-13-5g": {
-    "amazon": "https://www.amazon.in/dp/B0GX643KDN"
+    "amazon": "https://www.amazon.in/dp/B0HHRM5FW8"
   },
   "oneplus-buds-pro-3": {
-    "amazon": "https://www.amazon.in/dp/B0HNTTZ79M"
+    "amazon": "https://www.amazon.in/dp/B0DBHX75C4"
   },
   "oneplus-nord-4-5g": {
     "amazon": "https://www.amazon.in/dp/B0D77PNJMG"
   },
   "oneplus-pad-2": {
-    "amazon": "https://www.amazon.in/dp/B0GX6W5XYT"
+    "amazon": "https://www.amazon.in/dp/B0D7MZG8FF"
   },
   "redmi-note-13-pro+-5g-cdaba8": {
     "amazon": "https://www.amazon.in/dp/B0CRQ8874B"
@@ -67,7 +68,7 @@
   },
   "samsung-galaxy-a55-5g": {
     "amazon": "https://www.amazon.in/dp/B0CX8XF1X8",
-    "flipkart": "https://www.flipkart.com/-/p/-?pid=MBPHH7SZKGP966UZ"
+    "flipkart": "https://www.flipkart.com/samsung-galaxy-a55-5g-awesome-iceblue-256-gb/p/itm9d66e3d4ee04f"
   },
   "samsung-galaxy-s25-5g": {
     "amazon": "https://www.amazon.in/dp/B0H5Q6HHWC",
@@ -85,5 +86,45 @@
   },
   "sony-wh-ch720n-noise-cancelling": {
     "amazon": "https://www.amazon.in/dp/B0BS1PRC4L"
+  },
+  "boat-airdopes-311-pro-tws-earbuds": {
+    "blinkit": "https://blinkit.com/prn/x/prid/553801",
+    "amazon": "https://www.amazon.in/dp/B0D5DXP67N"
+  },
+  "noise-colorfit-pulse-2-max-smartwatch": {
+    "zepto": "https://www.zepto.com/pn/noise-colorfit-pulse-2-max-smartwatch-womens-edition-bluetooth-calling-1-85-display-100-sports-mode-rose-pink/pvid/cf228a1a-9a55-464e-81b1-377772f7e86f",
+    "amazon": "https://www.amazon.in/dp/B0B6BM372Q"
+  },
+  "noisefit-vortex-plus-smartwatch": {
+    "zepto": "https://www.zepto.com/pn/noise-noisefit-vortex-plus-smartwatch-jet-black/pvid/b755ec5d-30a7-4fa0-9604-ca55112ffd0e",
+    "amazon": "https://www.amazon.in/dp/B0CKZ53N5T"
+  },
+  "logitech-m171-optical-wireless-mouse": {
+    "blinkit": "https://blinkit.com/prn/x/prid/569693",
+    "amazon": "https://www.amazon.in/dp/B01B7BE5M4"
+  },
+  "logitech-g102-light-sync-wired-gaming-mouse": {
+    "blinkit": "https://blinkit.com/prn/x/prid/548334",
+    "amazon": "https://www.amazon.in/dp/B087LXCTFJ"
+  },
+  "ambrane-magsafe-wireless-10000mah-power-bank": {
+    "blinkit": "https://blinkit.com/prn/x/prid/627162",
+    "amazon": "https://www.amazon.in/dp/B0C3CG7K1L"
+  },
+  "boat-storm-blaze-smart-watch": {
+    "zepto": "https://www.zepto.com/pn/boat-storm-blaze-smart-watch-hd-display-bt-calling-ip68-dust-splash-sweat-resistant-active-black/pvid/246590a9-adf7-49d4-a9e3-ff7a8cc55881",
+    "amazon": "https://www.amazon.in/dp/B0B5DK9Z2V"
+  },
+  "apple-earpods-usb-c": {
+    "blinkit": "https://blinkit.com/prn/x/prid/619386",
+    "amazon": "https://www.amazon.in/dp/B0CHX436HW"
+  },
+  "portronics-toad-23-optical-wireless-mouse": {
+    "blinkit": "https://blinkit.com/prn/x/prid/530039",
+    "amazon": "https://www.amazon.in/dp/B09J97D2M3"
+  },
+  "hammer-drop-5w-wireless-bluetooth-speaker": {
+    "blinkit": "https://blinkit.com/prn/x/prid/672101",
+    "amazon": "https://www.amazon.in/dp/B0CH1G8Z7H"
   }
 }
