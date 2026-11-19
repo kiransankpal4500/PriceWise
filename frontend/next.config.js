@@ -10,10 +10,12 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const rawTarget = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";
+    const backendTarget = rawTarget.replace(/\/api\/v1\/?$/, "").replace(/\/+$/, "");
     return [
       {
         source: "/api/v1/:path*",
-        destination: "http://127.0.0.1:8000/api/v1/:path*",
+        destination: `${backendTarget}/api/v1/:path*`,
       },
     ];
   },

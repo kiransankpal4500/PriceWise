@@ -81,6 +81,111 @@ async def seed_database(force_refresh: bool = False):
             session.add(mp)
             mp_map[mp.slug] = mp
 
+        # Also add quick commerce marketplaces
+        for qc_slug, qc_name, qc_url in [("blinkit", "Blinkit", "https://blinkit.com"), ("zepto", "Zepto", "https://www.zepto.com")]:
+            if qc_slug not in mp_map:
+                qc_mp = Marketplace(
+                    id=str(uuid.uuid4()),
+                    name=qc_name,
+                    slug=qc_slug,
+                    base_url=qc_url,
+                    logo_url=f"{qc_url}/favicon.ico",
+                    is_active=True,
+                )
+                session.add(qc_mp)
+                mp_map[qc_slug] = qc_mp
+
+        await session.flush()
+
+        # Check for full seed catalog JSON
+        from pathlib import Path
+        import json
+        json_path = Path(__file__).resolve().parent.parent.parent / "data" / "seed_catalog.json"
+        now = datetime.now(timezone.utc)
+
+        if json_path.exists():
+            print(f"Loading extended catalog from {json_path.name}...", flush=True)
+            with open(json_path, "r", encoding="utf-8") as f:
+                catalog_items = json.load(f)
+
+            for item in catalog_items:
+                b_name = item.get("brand") or "Generic"
+                b_slug = b_name.lower().replace(" ", "-")
+                if b_slug not in brand_map:
+                    nb = Brand(id=str(uuid.uuid4()), name=b_name, slug=b_slug, logo_url=f"https://logo.clearbit.com/{b_slug}.com")
+                    session.add(nb)
+                    await session.flush()
+                    brand_map[b_slug] = nb
+
+                c_name = item.get("category") or "Computer Components"
+                c_slug = c_name.lower().replace(" ", "-")
+                if c_slug not in cat_map:
+                    nc = Category(id=str(uuid.uuid4()), name=c_name, slug=c_slug, description=c_name, icon_name="Package")
+                    session.add(nc)
+                    await session.flush()
+                    cat_map[c_slug] = nc
+
+                prod_id = str(uuid.uuid4())
+                prod = Product(
+                    id=prod_id,
+                    brand_id=brand_map[b_slug].id,
+                    category_id=cat_map[c_slug].id,
+                    name=item["name"],
+                    slug=item["slug"],
+                    model_number=f"MOD-{uuid.uuid4().hex[:6].upper()}",
+                    description=item["name"],
+                    default_image_url=item.get("image_url") or "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
+                )
+                session.add(prod)
+                await session.flush()
+
+                var_id = str(uuid.uuid4())
+                var = ProductVariant(
+                    id=var_id,
+                    product_id=prod.id,
+                    name="Standard",
+                    sku=f"SKU-{uuid.uuid4().hex[:8].upper()}",
+                    ram=None,
+                    storage=None,
+                    color="Standard",
+                    mrp=float(item.get("mrp") or item.get("price") or 999.0),
+                )
+                session.add(var)
+                await session.flush()
+
+                mp_choice = "amazon"
+                mp_str = item.get("marketplace", "").lower()
+                if "blink" in mp_str:
+                    mp_choice = "blinkit"
+                elif "zepto" in mp_str:
+                    mp_choice = "zepto"
+                elif "flipkart" in mp_str:
+                    mp_choice = "flipkart"
+
+                target_mp = mp_map.get(mp_choice) or list(mp_map.values())[0]
+                listing = MarketplaceListing(
+                    id=str(uuid.uuid4()),
+                    variant_id=var.id,
+                    marketplace_id=target_mp.id,
+                    external_id=f"EXT-{uuid.uuid4().hex[:10].upper()}",
+                    title=item["name"],
+                    product_url=item.get("product_url", "https://www.amazon.in"),
+                    image_url=item.get("image_url"),
+                    current_price=float(item.get("price") or 999.0),
+                    original_mrp=float(item.get("mrp") or item.get("price") or 999.0),
+                    availability="IN_STOCK",
+                    seller_name="Verified Retailer",
+                    rating=4.5,
+                    review_count=180,
+                    is_demo=False,
+                    last_scraped_at=now,
+                )
+                session.add(listing)
+
+            await session.commit()
+            print(f"Database successfully seeded with {len(catalog_items)} products from seed_catalog.json!", flush=True)
+            return
+
         # 4. Demo User
         demo_user = User(
             id=str(uuid.uuid4()),

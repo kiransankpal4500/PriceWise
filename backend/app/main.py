@@ -13,6 +13,23 @@ logger = logging.getLogger("pricewise")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initializing PriceWise platform...")
+    # Auto-bootstrap database tables and catalog if empty
+    try:
+        from app.database.session import engine, Base, AsyncSessionLocal
+        from app.models import Product
+        from sqlalchemy import select, func
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            
+        async with AsyncSessionLocal() as session:
+            count = (await session.execute(select(func.count(Product.id)))).scalar() or 0
+            if count == 0:
+                logger.info("Database is empty. Automatically bootstrapping catalog data...")
+                from app.database.init_db import seed_database
+                await seed_database(force_refresh=False)
+    except Exception as e:
+        logger.warning(f"Database bootstrap notice: {e}")
+
     start_scheduler()
     yield
     logger.info("Shutting down PriceWise platform...")

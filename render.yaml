@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: pricewise-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: QUICKCOMMERCE_API_KEY
+        value: "47861caa-b7aa-4d20-9ee3-9a2f1179eea3"
