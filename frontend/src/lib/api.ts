@@ -10,10 +10,21 @@ import {
 } from "@/types";
 
 function getApiBaseUrl(): string {
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.BACKEND_URL;
+
+  if (backendUrl) {
+    const clean = backendUrl.trim().replace(/\/+$/, "");
+    return clean.endsWith("/api/v1") ? clean : `${clean}/api/v1`;
+  }
+
   if (typeof window !== "undefined") {
     return `${window.location.origin}/api/v1`;
   }
-  return process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000/api/v1";
+
+  return "http://127.0.0.1:8000/api/v1";
 }
 
 function getAuthHeader(): Record<string, string> {
