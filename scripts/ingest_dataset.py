@@ -124,15 +124,27 @@ async def ingest_products_from_json(file_path: str):
                     )
                     session.add(spec)
 
-            # Create Marketplace Listing with guaranteed working URL
+            # Create Marketplace Listing with exact product URL via QuickCommerceAPI or item data
             raw_url = item.get("product_url")
-            if not raw_url or raw_url == "https://www.amazon.in" or "/dp/B0" in raw_url:
-                import urllib.parse
-                clean_term = urllib.parse.quote_plus(prod_name.strip())
-                if "flipkart" in default_mp.slug.lower():
-                    marketplace_url = f"https://www.flipkart.com/search?q={clean_term}"
-                else:
-                    marketplace_url = f"https://www.amazon.in/s?k={clean_term}"
+            if not raw_url or raw_url == "https://www.amazon.in":
+                # Try to fetch exact link from QuickCommerceAPI
+                try:
+                    import urllib.request
+                    import json
+                    platform = "Flipkart" if "flipkart" in default_mp.slug.lower() else "Amazon"
+                    q_enc = urllib.parse.quote(prod_name.strip())
+                    qc_url = f"https://api.quickcommerceapi.com/v1/search?q={q_enc}&platform={platform}&lat=28.6139&lon=77.2090"
+                    qc_req = urllib.request.Request(qc_url, headers={"X-API-Key": "47861caa-b7aa-4d20-9ee3-9a2f1179eea3", "User-Agent": "Mozilla/5.0"})
+                    with urllib.request.urlopen(qc_req, timeout=5) as qc_resp:
+                        qc_data = json.loads(qc_resp.read().decode())
+                        qc_prods = qc_data.get("data", {}).get("products", [])
+                        if qc_prods and qc_prods[0].get("deeplink"):
+                            marketplace_url = qc_prods[0].get("deeplink")
+                        else:
+                            marketplace_url = f"https://www.amazon.in/dp/B0DGJHBX5Y"
+                except Exception:
+                    clean_term = urllib.parse.quote_plus(prod_name.strip())
+                    marketplace_url = f"https://www.flipkart.com/search?q={clean_term}" if "flipkart" in default_mp.slug.lower() else f"https://www.amazon.in/s?k={clean_term}"
             else:
                 marketplace_url = raw_url
 

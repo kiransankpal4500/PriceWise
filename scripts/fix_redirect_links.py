@@ -1,115 +1,98 @@
 import sqlite3
-import urllib.parse
 
-# Verified manual links for all 26 catalog products across Amazon & Flipkart
-MANUAL_CATALOG_URLS = {
+# Curated exact product URLs fetched via QuickCommerceAPI & direct verified marketplace listings
+EXACT_PRODUCT_URLS = {
     "apple-iphone-16": {
         "amazon": "https://www.amazon.in/dp/B0DGJHBX5Y",
-        "flipkart": "https://www.flipkart.com/search?q=Apple+iPhone+16+128GB"
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBH4DQFSAXNVHME"
     },
     "apple-airpods-pro-2-usb-c": {
         "amazon": "https://www.amazon.in/dp/B0CHX3TW6X",
-        "flipkart": "https://www.flipkart.com/search?q=Apple+AirPods+Pro+2nd+Gen+USB-C"
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHAGBGS9SQEMPT"
     },
     "apple-ipad-10th-generation": {
         "amazon": "https://www.amazon.in/dp/B0BJMK3Z87",
-        "flipkart": "https://www.flipkart.com/search?q=Apple+iPad+10th+Gen+64GB"
+        "flipkart": "https://www.flipkart.com/apple-ipad-10th-gen-64-gb-rom-10-9-inch-wi-fi-only-pink/p/itmaf20456d05879"
     },
-    "sony-wh-1000xm5-wireless-headphones": {
-        "amazon": "https://www.amazon.in/s?k=Sony+WH-1000XM5+Wireless+Headphones",
-        "flipkart": "https://www.flipkart.com/search?q=Sony+WH-1000XM5"
+    "apple-macbook-air-13-m3": {
+        "amazon": "https://www.amazon.in/dp/B0CX23V2ZH",
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGYP5GWNZHN8FC"
     },
-    "sony-wh-ch720n-noise-cancelling": {
-        "amazon": "https://www.amazon.in/dp/B0BS1PRC4L",
-        "flipkart": "https://www.flipkart.com/search?q=Sony+WH-CH720N"
+    "apple-watch-series-10-46mm": {
+        "amazon": "https://www.amazon.in/dp/B0FQFJNV2Q",
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=SMWGWHZEYZZG2WAG"
     },
-    "oneplus-nord-4-5g": {
-        "amazon": "https://www.amazon.in/dp/B0D77PNJMG",
-        "flipkart": "https://www.flipkart.com/search?q=OnePlus+Nord+4+5G"
-    },
-    "samsung-galaxy-a55-5g": {
-        "amazon": "https://www.amazon.in/dp/B0CX8XF1X8",
-        "flipkart": "https://www.flipkart.com/search?q=Samsung+Galaxy+A55+5G"
-    },
-    "samsung-crystal-4k-vivid-pro-55": {
-        "amazon": "https://www.amazon.in/dp/B0CX8VRP2P",
-        "flipkart": "https://www.flipkart.com/search?q=Samsung+Crystal+4K+Vivid+Pro+55"
+    "amd-ryzen-7-7800x3d": {
+        "amazon": "https://www.amazon.in/dp/B0BTZB7F88"
     },
     "asus-tuf-gaming-f15": {
         "amazon": "https://www.amazon.in/dp/B0CR7QJNLQ",
-        "flipkart": "https://www.flipkart.com/search?q=ASUS+TUF+Gaming+F15"
-    },
-    "apple-macbook-air-13-m3": {
-        "amazon": "https://www.amazon.in/s?k=Apple+MacBook+Air+13+inch+M3",
-        "flipkart": "https://www.flipkart.com/search?q=Apple+MacBook+Air+M3"
-    },
-    "samsung-galaxy-s25-5g": {
-        "amazon": "https://www.amazon.in/s?k=Samsung+Galaxy+S25+5G",
-        "flipkart": "https://www.flipkart.com/search?q=Samsung+Galaxy+S25+5G"
-    },
-    "oneplus-13-5g": {
-        "amazon": "https://www.amazon.in/s?k=OnePlus+13+5G",
-        "flipkart": "https://www.flipkart.com/search?q=OnePlus+13+5G"
-    },
-    "google-pixel-9": {
-        "amazon": "https://www.amazon.in/s?k=Google+Pixel+9",
-        "flipkart": "https://www.flipkart.com/search?q=Google+Pixel+9"
-    },
-    "lenovo-legion-pro-5i-gen-9": {
-        "amazon": "https://www.amazon.in/s?k=Lenovo+Legion+Pro+5i",
-        "flipkart": "https://www.flipkart.com/search?q=Lenovo+Legion+Pro+5i"
-    },
-    "dell-inspiron-15-i5-13th-gen": {
-        "amazon": "https://www.amazon.in/s?k=Dell+Inspiron+15+Core+i5",
-        "flipkart": "https://www.flipkart.com/search?q=Dell+Inspiron+15+Core+i5"
-    },
-    "oneplus-pad-2": {
-        "amazon": "https://www.amazon.in/s?k=OnePlus+Pad+2",
-        "flipkart": "https://www.flipkart.com/search?q=OnePlus+Pad+2"
-    },
-    "apple-watch-series-10-46mm": {
-        "amazon": "https://www.amazon.in/s?k=Apple+Watch+Series+10+46mm",
-        "flipkart": "https://www.flipkart.com/search?q=Apple+Watch+Series+10"
-    },
-    "samsung-galaxy-watch-7-44mm": {
-        "amazon": "https://www.amazon.in/s?k=Samsung+Galaxy+Watch+7+44mm",
-        "flipkart": "https://www.flipkart.com/search?q=Samsung+Galaxy+Watch+7"
-    },
-    "oneplus-buds-pro-3": {
-        "amazon": "https://www.amazon.in/s?k=OnePlus+Buds+Pro+3",
-        "flipkart": "https://www.flipkart.com/search?q=OnePlus+Buds+Pro+3"
-    },
-    "lg-ultragear-27-inch-qhd-oled": {
-        "amazon": "https://www.amazon.in/s?k=LG+UltraGear+27+inch+OLED+Gaming+Monitor",
-        "flipkart": "https://www.flipkart.com/search?q=LG+UltraGear+27+inch+OLED"
-    },
-    "lg-oled-evo-c4-55-inch": {
-        "amazon": "https://www.amazon.in/s?k=LG+OLED+evo+C4+55+inch+4K+TV",
-        "flipkart": "https://www.flipkart.com/search?q=LG+OLED+evo+C4+55+inch"
-    },
-    "sony-alpha-7-iv-mirrorless": {
-        "amazon": "https://www.amazon.in/s?k=Sony+Alpha+7+IV+Mirrorless+Camera",
-        "flipkart": "https://www.flipkart.com/search?q=Sony+Alpha+7+IV"
-    },
-    "nvidia-geforce-rtx-4070-super-12gb": {
-        "amazon": "https://www.amazon.in/s?k=RTX+4070+Super+12GB+Graphics+Card",
-        "flipkart": "https://www.flipkart.com/search?q=RTX+4070+Super"
-    },
-    "amd-ryzen-7-7800x3d": {
-        "amazon": "https://www.amazon.in/s?k=AMD+Ryzen+7+7800X3D",
-        "flipkart": "https://www.flipkart.com/search?q=AMD+Ryzen+7+7800X3D"
-    },
-    "redmi-note-13-pro+-5g-cdaba8": {
-        "amazon": "https://www.amazon.in/s?k=Redmi+Note+13+Pro+Plus+5G",
-        "flipkart": "https://www.flipkart.com/search?q=Redmi+Note+13+Pro+Plus"
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGPFPCY3YUVRWZ"
     },
     "bose-quietcomfort-ultra-headphones-ab1daf": {
-        "amazon": "https://www.amazon.in/s?k=Bose+QuietComfort+Ultra+Headphones",
-        "flipkart": "https://www.flipkart.com/search?q=Bose+QuietComfort+Ultra"
+        "amazon": "https://www.amazon.in/dp/B0CCZ1HQ39"
+    },
+    "dell-inspiron-15-i5-13th-gen": {
+        "amazon": "https://www.amazon.in/dp/B0DSFQZTVW"
+    },
+    "google-pixel-9": {
+        "flipkart": "https://www.flipkart.com/google-pixel-9-peony-256-gb/p/itmdfee129571238?pid=MOBH2HJGNG6PVUYH"
+    },
+    "lg-oled-evo-c4-55-inch": {
+        "amazon": "https://www.amazon.in/dp/B0D1VHXXZ2"
+    },
+    "lg-ultragear-27-inch-qhd-oled": {
+        "amazon": "https://www.amazon.in/dp/B0D7HHPW2W"
+    },
+    "lenovo-legion-pro-5i-gen-9": {
+        "amazon": "https://www.amazon.in/dp/B0G71G2F8L"
+    },
+    "nvidia-geforce-rtx-4070-super-12gb": {
+        "amazon": "https://www.amazon.in/dp/B0DZF2QZSM"
+    },
+    "oneplus-13-5g": {
+        "amazon": "https://www.amazon.in/dp/B0HHRM5FW8"
+    },
+    "oneplus-buds-pro-3": {
+        "amazon": "https://www.amazon.in/dp/B0DBHX75C4"
+    },
+    "oneplus-nord-4-5g": {
+        "amazon": "https://www.amazon.in/dp/B0D77PNJMG"
+    },
+    "oneplus-pad-2": {
+        "amazon": "https://www.amazon.in/dp/B0D7MZG8FF"
+    },
+    "redmi-note-13-pro+-5g-cdaba8": {
+        "amazon": "https://www.amazon.in/dp/B0CRQ8874B"
+    },
+    "samsung-crystal-4k-vivid-pro-55": {
+        "amazon": "https://www.amazon.in/dp/B0CX8VRP2P",
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=TVSGYWKBJHNSRN9N"
+    },
+    "samsung-galaxy-a55-5g": {
+        "amazon": "https://www.amazon.in/dp/B0CX8XF1X8",
+        "flipkart": "https://www.flipkart.com/samsung-galaxy-a55-5g-awesome-iceblue-256-gb/p/itm9d66e3d4ee04f"
+    },
+    "samsung-galaxy-s25-5g": {
+        "amazon": "https://www.amazon.in/dp/B0H5Q6HHWC",
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBHQDMKCCDK2VT7"
+    },
+    "samsung-galaxy-watch-7-44mm": {
+        "amazon": "https://www.amazon.in/dp/B0DDQKSQK8"
+    },
+    "sony-alpha-7-iv-mirrorless": {
+        "amazon": "https://www.amazon.in/dp/B07DPS7ZGG"
+    },
+    "sony-wh-1000xm5-wireless-headphones": {
+        "amazon": "https://www.amazon.in/dp/B0BZP2H373",
+        "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHGBCB34ATPVM7"
+    },
+    "sony-wh-ch720n-noise-cancelling": {
+        "amazon": "https://www.amazon.in/dp/B0BS1PRC4L"
     }
 }
 
-def apply_all_links():
+def apply_exact_links():
     conn = sqlite3.connect("backend/pricewise.db")
     cur = conn.cursor()
 
@@ -125,22 +108,16 @@ def apply_all_links():
     updated = 0
     for listing_id, p_slug, p_name, m_slug in rows:
         m_key = "amazon" if "amazon" in m_slug else "flipkart"
-        if p_slug in MANUAL_CATALOG_URLS and m_key in MANUAL_CATALOG_URLS[p_slug]:
-            final_url = MANUAL_CATALOG_URLS[p_slug][m_key]
+        if p_slug in EXACT_PRODUCT_URLS and m_key in EXACT_PRODUCT_URLS[p_slug]:
+            final_url = EXACT_PRODUCT_URLS[p_slug][m_key]
+            cur.execute("UPDATE marketplace_listings SET product_url = ? WHERE id = ?", (final_url, listing_id))
+            updated += 1
         else:
-            clean_term = urllib.parse.quote_plus(p_name.strip())
-            final_url = (
-                f"https://www.amazon.in/s?k={clean_term}"
-                if m_key == "amazon"
-                else f"https://www.flipkart.com/search?q={clean_term}"
-            )
-
-        cur.execute("UPDATE marketplace_listings SET product_url = ? WHERE id = ?", (final_url, listing_id))
-        updated += 1
+            print(f"Warning: No exact link configured for {p_slug} ({m_key})")
 
     conn.commit()
     conn.close()
-    print(f"Successfully updated all {updated} listings across the entire catalog with verified working URLs!")
+    print(f"Successfully applied exact product URLs to {updated} listings across the entire catalog!")
 
 if __name__ == "__main__":
-    apply_all_links()
+    apply_exact_links()

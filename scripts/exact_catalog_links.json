@@ -1,0 +1,89 @@
+{
+  "amd-ryzen-7-7800x3d": {
+    "amazon": "https://www.amazon.in/dp/B0BTZB7F88"
+  },
+  "asus-tuf-gaming-f15": {
+    "amazon": "https://www.amazon.in/dp/B0CR7QJNLQ",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGPFPCY3YUVRWZ"
+  },
+  "apple-airpods-pro-2-usb-c": {
+    "amazon": "https://www.amazon.in/dp/B0CHX3TW6X",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHGG6KSNDDYF9C"
+  },
+  "apple-macbook-air-13-m3": {
+    "amazon": "https://www.amazon.in/dp/B0GR1K8S8H",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=COMGYP5GWNZHN8FC"
+  },
+  "apple-watch-series-10-46mm": {
+    "amazon": "https://www.amazon.in/dp/B0D9MNL7CX"
+  },
+  "apple-ipad-10th-generation": {
+    "amazon": "https://www.amazon.in/dp/B0BJMK3Z87",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=TABG3YZNZP7T59SN"
+  },
+  "apple-iphone-16": {
+    "amazon": "https://www.amazon.in/dp/B0DGJHBX5Y",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBH4DQFSAXNVHME"
+  },
+  "bose-quietcomfort-ultra-headphones-ab1daf": {
+    "amazon": "https://www.amazon.in/dp/B0CCZ1HQ39"
+  },
+  "dell-inspiron-15-i5-13th-gen": {
+    "amazon": "https://www.amazon.in/dp/B0DSFQZTVW"
+  },
+  "google-pixel-9": {
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBHPHNVEC2P4WV3"
+  },
+  "lg-oled-evo-c4-55-inch": {
+    "amazon": "https://www.amazon.in/dp/B0CPV3KPNB"
+  },
+  "lg-ultragear-27-inch-qhd-oled": {
+    "amazon": "https://www.amazon.in/dp/B0D7HHPW2W"
+  },
+  "lenovo-legion-pro-5i-gen-9": {
+    "amazon": "https://www.amazon.in/dp/B0G71G2F8L"
+  },
+  "nvidia-geforce-rtx-4070-super-12gb": {
+    "amazon": "https://www.amazon.in/dp/B0BNP2CMXM"
+  },
+  "oneplus-13-5g": {
+    "amazon": "https://www.amazon.in/dp/B0GX643KDN"
+  },
+  "oneplus-buds-pro-3": {
+    "amazon": "https://www.amazon.in/dp/B0HNTTZ79M"
+  },
+  "oneplus-nord-4-5g": {
+    "amazon": "https://www.amazon.in/dp/B0D77PNJMG"
+  },
+  "oneplus-pad-2": {
+    "amazon": "https://www.amazon.in/dp/B0GX6W5XYT"
+  },
+  "redmi-note-13-pro+-5g-cdaba8": {
+    "amazon": "https://www.amazon.in/dp/B0CRQ8874B"
+  },
+  "samsung-crystal-4k-vivid-pro-55": {
+    "amazon": "https://www.amazon.in/dp/B0CX8VRP2P",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=TVSGYWKBJHNSRN9N"
+  },
+  "samsung-galaxy-a55-5g": {
+    "amazon": "https://www.amazon.in/dp/B0CX8XF1X8",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=MBPHH7SZKGP966UZ"
+  },
+  "samsung-galaxy-s25-5g": {
+    "amazon": "https://www.amazon.in/dp/B0H5Q6HHWC",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=MOBHQDMKCCDK2VT7"
+  },
+  "samsung-galaxy-watch-7-44mm": {
+    "amazon": "https://www.amazon.in/dp/B0DDQKSQK8"
+  },
+  "sony-alpha-7-iv-mirrorless": {
+    "amazon": "https://www.amazon.in/dp/B07DPS7ZGG"
+  },
+  "sony-wh-1000xm5-wireless-headphones": {
+    "amazon": "https://www.amazon.in/dp/B0BZP2H373",
+    "flipkart": "https://www.flipkart.com/-/p/-?pid=ACCHGBCB34ATPVM7"
+  },
+  "sony-wh-ch720n-noise-cancelling": {
+    "amazon": "https://www.amazon.in/dp/B0BS1PRC4L"
+  }
+}

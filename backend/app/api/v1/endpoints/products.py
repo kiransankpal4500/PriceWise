@@ -280,9 +280,9 @@ async def redirect_to_best_deal(id_or_slug: str, db: AsyncSession = Depends(get_
     best_listing, product, marketplace = row
     target_url = best_listing.product_url
 
-    import urllib.parse
-    # Guaranteed fallback if raw URL is empty or unverified
-    if not target_url or ("/dp/B0" in target_url and not any(v in target_url for v in ["B0DGJHBX5Y", "B0CHX3TW6X", "B0BJMK3Z87", "B0BS1PRC4L", "B0D77PNJMG", "B0CX8XF1X8", "B0CX8VRP2P", "B0CR7QJNLQ"])):
+    # Fallback only if URL is completely missing
+    if not target_url:
+        import urllib.parse
         encoded = urllib.parse.quote_plus(product.name)
         if "flipkart" in marketplace.slug.lower():
             target_url = f"https://www.flipkart.com/search?q={encoded}"
@@ -310,8 +310,9 @@ async def redirect_listing(listing_id: str, db: AsyncSession = Depends(get_db)):
     listing, product, marketplace = row
     target_url = listing.product_url
 
-    import urllib.parse
-    if not target_url or ("/dp/B0" in target_url and not any(v in target_url for v in ["B0DGJHBX5Y", "B0CHX3TW6X", "B0BJMK3Z87", "B0BS1PRC4L", "B0D77PNJMG", "B0CX8XF1X8", "B0CX8VRP2P", "B0CR7QJNLQ"])):
+    # Fallback only if URL is completely missing
+    if not target_url:
+        import urllib.parse
         encoded = urllib.parse.quote_plus(product.name)
         if "flipkart" in marketplace.slug.lower():
             target_url = f"https://www.flipkart.com/search?q={encoded}"

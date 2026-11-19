@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     ]
 
     # Marketplace Scraping / Integration
+    QUICKCOMMERCE_API_KEY: str = "47861caa-b7aa-4d20-9ee3-9a2f1179eea3"
     MARKETPLACE_REQUEST_TIMEOUT: int = 15
     MARKETPLACE_RATE_LIMIT_DELAY: float = 2.0
     ENABLE_DEMO_DATA: bool = True
