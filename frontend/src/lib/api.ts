@@ -85,6 +85,7 @@ export async function searchProducts(params: {
   min_price?: number;
   max_price?: number;
   page?: number;
+  page_size?: number;
   include_live?: boolean;
 }): Promise<SearchResponse> {
   const url = new URL(`${getApiBaseUrl()}/search`);
@@ -93,6 +94,7 @@ export async function searchProducts(params: {
   if (params.min_price) url.searchParams.set("min_price", params.min_price.toString());
   if (params.max_price) url.searchParams.set("max_price", params.max_price.toString());
   if (params.page) url.searchParams.set("page", params.page.toString());
+  if (params.page_size) url.searchParams.set("page_size", params.page_size.toString());
   if (params.include_live) url.searchParams.set("include_live_scraping", "true");
 
   const res = await fetch(url.toString(), { cache: "no-store" });

@@ -6,12 +6,25 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   Filter,
-  SlidersHorizontal,
-  ArrowUpDown,
   RotateCcw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { searchProducts, fetchCategories } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
+
+function getPageNumbers(current: number, total: number): (number | string)[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 3) {
+    return [1, 2, 3, 4, "...", total];
+  }
+  if (current >= total - 2) {
+    return [1, "...", total - 3, total - 2, total - 1, total];
+  }
+  return [1, "...", current - 1, current, current + 1, "...", total];
+}
 
 function SearchContent() {
   const router = useRouter();
@@ -19,17 +32,20 @@ function SearchContent() {
 
   const initialQuery = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "";
+  const initialPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
 
   const [query, setQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
-  const [sortBy, setSortBy] = useState("relevance");
   const [includeLive, setIncludeLive] = useState(false);
+  const pageSize = 24;
 
   useEffect(() => {
     setQuery(searchParams.get("q") || "");
     setSelectedCategory(searchParams.get("category") || "");
+    setCurrentPage(Math.max(1, parseInt(searchParams.get("page") || "1", 10)));
   }, [searchParams]);
 
   const { data: categories = [] } = useQuery({
@@ -38,31 +54,53 @@ function SearchContent() {
   });
 
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ["search", query, selectedCategory, minPrice, maxPrice, includeLive],
+    queryKey: ["search", query, selectedCategory, minPrice, maxPrice, currentPage, includeLive],
     queryFn: () =>
       searchProducts({
         q: query,
         category: selectedCategory || undefined,
         min_price: minPrice,
         max_price: maxPrice,
+        page: currentPage,
+        page_size: pageSize,
         include_live: includeLive,
       }),
   });
 
+  const updateUrl = (newQuery: string, newCat: string, newPage: number) => {
+    const params = new URLSearchParams();
+    if (newQuery.trim()) params.set("q", newQuery.trim());
+    if (newCat) params.set("category", newCat);
+    if (newPage > 1) params.set("page", newPage.toString());
+    router.push(`/search?${params.toString()}`);
+  };
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
-    if (selectedCategory) params.set("category", selectedCategory);
-    router.push(`/search?${params.toString()}`);
+    setCurrentPage(1);
+    updateUrl(query, selectedCategory, 1);
+  };
+
+  const handleCategoryChange = (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+    setCurrentPage(1);
+    updateUrl(query, categorySlug, 1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    updateUrl(query, selectedCategory, newPage);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const handleResetFilters = () => {
     setSelectedCategory("");
     setMinPrice(undefined);
     setMaxPrice(undefined);
-    setSortBy("relevance");
     setIncludeLive(false);
+    setCurrentPage(1);
     router.push("/search");
   };
 
@@ -74,7 +112,7 @@ function SearchContent() {
           Electronics Catalog & Search
         </h1>
         <p className="text-sm text-slate-400">
-          Compare multi-marketplace prices, verify specifications, and track real market trends.
+          Compare multi-marketplace prices, verify specifications, and track real market trends across genuine electronics.
         </p>
 
         <form onSubmit={handleSearchSubmit} className="flex gap-2 max-w-2xl">
@@ -119,9 +157,9 @@ function SearchContent() {
             <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Category
             </label>
-            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
               <button
-                onClick={() => setSelectedCategory("")}
+                onClick={() => handleCategoryChange("")}
                 className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   selectedCategory === ""
                     ? "bg-blue-600 text-white"
@@ -133,7 +171,7 @@ function SearchContent() {
               {categories.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => setSelectedCategory(c.slug)}
+                  onClick={() => handleCategoryChange(c.slug)}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     selectedCategory === c.slug
                       ? "bg-blue-600 text-white"
@@ -156,14 +194,20 @@ function SearchContent() {
                 type="number"
                 placeholder="Min ₹"
                 value={minPrice || ""}
-                onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setMinPrice(e.target.value ? Number(e.target.value) : undefined);
+                }}
                 className="w-full rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
               <input
                 type="number"
                 placeholder="Max ₹"
                 value={maxPrice || ""}
-                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setMaxPrice(e.target.value ? Number(e.target.value) : undefined);
+                }}
                 className="w-full rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -175,7 +219,10 @@ function SearchContent() {
               <input
                 type="checkbox"
                 checked={includeLive}
-                onChange={(e) => setIncludeLive(e.target.checked)}
+                onChange={(e) => {
+                  setCurrentPage(1);
+                  setIncludeLive(e.target.checked);
+                }}
                 className="rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-0"
               />
               <span>Trigger live marketplace scrape</span>
@@ -214,11 +261,66 @@ function SearchContent() {
               ))}
             </div>
           ) : searchResults && searchResults.items.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {searchResults.items.map((prod) => (
-                <ProductCard key={prod.id} product={prod} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {searchResults.items.map((prod) => (
+                  <ProductCard key={prod.id} product={prod} />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {searchResults.total_pages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-slate-800">
+                  <div className="text-xs text-slate-400">
+                    Page <span className="font-semibold text-white">{searchResults.page}</span> of{" "}
+                    <span className="font-semibold text-white">{searchResults.total_pages}</span> (
+                    <span className="font-semibold text-white">{searchResults.total_results}</span> products total)
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                      <span>Prev</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {getPageNumbers(currentPage, searchResults.total_pages).map((p, idx) =>
+                        p === "..." ? (
+                          <span key={`ellipsis-${idx}`} className="px-2 py-1 text-xs text-slate-500">
+                            ...
+                          </span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => handlePageChange(Number(p))}
+                            className={`min-w-[32px] h-8 px-2 rounded-lg text-xs font-semibold transition-colors ${
+                              currentPage === p
+                                ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
+                                : "border border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= searchResults.total_pages}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-12 text-center space-y-4">
               <p className="text-base text-slate-300">No products found matching your current filters.</p>

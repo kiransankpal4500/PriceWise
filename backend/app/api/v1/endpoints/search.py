@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, func
 from app.database.session import get_db
 from app.models.catalog import Product, Brand, Category, ProductVariant
-from app.models.marketplaces import MarketplaceListing
+from app.models.marketplaces import MarketplaceListing, Marketplace
 from app.schemas.search import SearchResponse
 from app.schemas.products import ProductSummarySchema
 from app.integrations.registry import integration_registry
@@ -28,11 +28,13 @@ async def search_products(
     query_clean = q.strip()
 
     stmt = (
-        select(Product, Brand, Category, ProductVariant, MarketplaceListing)
+        select(Product, Brand, Category, ProductVariant, MarketplaceListing, Marketplace)
         .join(Brand, Brand.id == Product.brand_id)
         .join(Category, Category.id == Product.category_id)
         .join(ProductVariant, ProductVariant.product_id == Product.id)
         .join(MarketplaceListing, MarketplaceListing.variant_id == ProductVariant.id)
+        .join(Marketplace, Marketplace.id == MarketplaceListing.marketplace_id)
+        .where(MarketplaceListing.current_price > 0)
     )
 
     if query_clean:
@@ -66,7 +68,7 @@ async def search_products(
     categories_found = set()
     brands_found = set()
 
-    for p, b, c, v, l in rows:
+    for p, b, c, v, l, mp in rows:
         categories_found.add(c.name)
         brands_found.add(b.name)
         if p.id in seen_products:
@@ -75,7 +77,11 @@ async def search_products(
 
         mrp = float(v.mrp)
         price = float(l.current_price)
+        if price <= 0:
+            continue
         disc = round(((mrp - price) / mrp) * 100.0, 1) if mrp > price else 0.0
+        if disc > 90.0:
+            disc = 0.0
 
         items.append(
             ProductSummarySchema(
@@ -97,6 +103,8 @@ async def search_products(
                 review_count=l.review_count,
                 is_demo=l.is_demo,
                 primary_variant_id=v.id,
+                best_offer_url=l.product_url,
+                best_offer_marketplace=mp.name,
             )
         )
 

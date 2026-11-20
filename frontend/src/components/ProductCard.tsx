@@ -59,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       )}
 
       {/* Discount Badge */}
-      {product.discount_percentage && product.discount_percentage > 0 && !product.is_demo ? (
+      {product.discount_percentage && product.discount_percentage > 0 && product.discount_percentage <= 90 && product.best_price > 0 && !product.is_demo ? (
         <div className="absolute top-3 left-3 z-10 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20 backdrop-blur-md">
           {Math.round(product.discount_percentage)}% OFF
         </div>
@@ -168,9 +168,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-baseline justify-between">
             <div>
               <span className="text-lg font-bold text-white tracking-tight">
-                {formatINR(product.best_price)}
+                {product.best_price > 0 ? formatINR(product.best_price) : "Check Price"}
               </span>
-              {product.mrp && product.mrp > product.best_price && (
+              {product.best_price > 0 && product.mrp && product.mrp > product.best_price && (
                 <span className="ml-2 text-xs text-slate-500 line-through">
                   {formatINR(product.mrp)}
                 </span>

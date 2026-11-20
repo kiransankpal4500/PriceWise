@@ -158,8 +158,8 @@
     "slug": "asus-tuf-gaming-f15",
     "brand": "ASUS",
     "category": "Laptops",
-    "price": 0.0,
-    "mrp": 0.0,
+    "price": 49990.0,
+    "mrp": 78990.0,
     "product_url": "https://www.flipkart.com/-/p/-?pid=COMGPFPCY3YUVRWZ",
     "image_url": "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80",
     "marketplace": "Flipkart"
@@ -1254,17 +1254,6 @@
     "marketplace": "Blinkit"
   },
   {
-    "name": "Cotton Earbuds",
-    "slug": "cotton-earbuds",
-    "brand": "Johnson's",
-    "category": "Earbuds",
-    "price": 147.0,
-    "mrp": 165.0,
-    "product_url": "https://blinkit.com/prn/x/prid/1001",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/1304dd3c-a813-4c60-9710-9f0b9e020cae.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
     "name": "Squad M7 Wired Earphones (Light Grey)",
     "slug": "squad-m7-wired-earphones-light-grey",
     "brand": "Dubstep",
@@ -1273,17 +1262,6 @@
     "mrp": 499.0,
     "product_url": "https://blinkit.com/prn/x/prid/639250",
     "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1775716813237-1898.png",
-    "marketplace": "Blinkit"
-  },
-  {
-    "name": "Cotton Buds (Paper Stick)",
-    "slug": "cotton-buds-paper-stick",
-    "brand": "GUBB",
-    "category": "Earbuds",
-    "price": 129.0,
-    "mrp": 135.0,
-    "product_url": "https://blinkit.com/prn/x/prid/703334",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/1d7cb2b9-193c-47ad-b4cb-f518a6dea411.jpg",
     "marketplace": "Blinkit"
   },
   {
@@ -1331,7 +1309,7 @@
     "marketplace": "Blinkit"
   },
   {
-    "name": "S2IWW-S030 Ink\u2019D TWS Earbuds",
+    "name": "S2IWW-S030 Ink’D TWS Earbuds",
     "slug": "s2iww-s030-ink-d-tws-earbuds",
     "brand": "Skullcandy",
     "category": "Earbuds",
@@ -2915,7 +2893,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Ant Value FKBRI01 Ultra-Slim Compact USB Wired Keyboard for Mac and PC,Windows 10/8 / 7 / Vista/XP, Spill-Resistant Silent Keyboard \u2013 Membrane Water-Resistant Coating 10 Million Keystrokes (Black)",
+    "name": "Ant Value FKBRI01 Ultra-Slim Compact USB Wired Keyboard for Mac and PC,Windows 10/8 / 7 / Vista/XP, Spill-Resistant Silent Keyboard – Membrane Water-Resistant Coating 10 Million Keystrokes (Black)",
     "slug": "ant-value-fkbri01-ultra-slim-compact-usb-wired-keyboard-for-mac-and-pc-windows-1",
     "brand": "Generic",
     "category": "Computer Components",
@@ -3399,7 +3377,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Acer Nitro XV272U X1 27 Inch WQHD (2560\u00d71440) IPS Gaming Monitor | 200Hz Refresh Rate | 0.5ms GTG | AMD FreeSync Premium | HDR400 | 2\u00d7HDMI, DP | ErgoStand | 2W\u00d72 Stereo Speakers | DCI-P3 90% | Black",
+    "name": "Acer Nitro XV272U X1 27 Inch WQHD (2560×1440) IPS Gaming Monitor | 200Hz Refresh Rate | 0.5ms GTG | AMD FreeSync Premium | HDR400 | 2×HDMI, DP | ErgoStand | 2W×2 Stereo Speakers | DCI-P3 90% | Black",
     "slug": "acer-nitro-xv272u-x1-27-inch-wqhd-2560-1440-ips-gaming-monitor-200hz-refresh-rat",
     "brand": "Generic",
     "category": "Headphones",
@@ -3410,7 +3388,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "LG 32GS60QC 80cm (32 Inch) Ultragear Curved (1000R) QHD (2560x1440) Gaming Monitor, 180Hz, 1ms, 3-Side Virtually Borderless, Anti-Glare, DP, HDMI X 2, HP Out, AMD FreeSync\u2122, Tilt Adjustment (Black)",
+    "name": "LG 32GS60QC 80cm (32 Inch) Ultragear Curved (1000R) QHD (2560x1440) Gaming Monitor, 180Hz, 1ms, 3-Side Virtually Borderless, Anti-Glare, DP, HDMI X 2, HP Out, AMD FreeSync™, Tilt Adjustment (Black)",
     "slug": "lg-32gs60qc-80cm-32-inch-ultragear-curved-1000r-qhd-2560x1440-gaming-monitor-180",
     "brand": "Generic",
     "category": "Monitors",
@@ -4169,7 +4147,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "GOVO GOSURROUND 900 | 200W Soundbar | 2.1 Channel Home Theatre | Deep Bass from 6.5\u201d Subwoofer | BT v5.3, HDMI, AUX, USB Connectivity | 4 EQ Modes | Sleek Remote & LED Lights+Display (Platinum Black)",
+    "name": "GOVO GOSURROUND 900 | 200W Soundbar | 2.1 Channel Home Theatre | Deep Bass from 6.5” Subwoofer | BT v5.3, HDMI, AUX, USB Connectivity | 4 EQ Modes | Sleek Remote & LED Lights+Display (Platinum Black)",
     "slug": "govo-gosurround-900-200w-soundbar-2-1-channel-home-theatre-deep-bass-from-6-5-su",
     "brand": "Generic",
     "category": "Headphones",
@@ -4191,7 +4169,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "PLAYZZ 48MP Digital Camera with 180\u00b0 Flip Screen, Fill Light & 8GB SD Card, Compact Point & Shoot Selfie Vlogging Camera for Beginners, Teens & Travel (Pink)",
+    "name": "PLAYZZ 48MP Digital Camera with 180° Flip Screen, Fill Light & 8GB SD Card, Compact Point & Shoot Selfie Vlogging Camera for Beginners, Teens & Travel (Pink)",
     "slug": "playzz-48mp-digital-camera-with-180-flip-screen-fill-light-8gb-sd-card-compact-p",
     "brand": "Generic",
     "category": "Cameras",
@@ -4213,7 +4191,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "48MP Digital Camera for Kids & Adults -Real Photo & Video Mini Camera for Photography 2.4\u201d Rotating Screen, Built in Games Kids Cameras for 5-15 Years with 8 GB Sd Card(White)",
+    "name": "48MP Digital Camera for Kids & Adults -Real Photo & Video Mini Camera for Photography 2.4” Rotating Screen, Built in Games Kids Cameras for 5-15 Years with 8 GB Sd Card(White)",
     "slug": "48mp-digital-camera-for-kids-adults-real-photo-video-mini-camera-for-photography",
     "brand": "Generic",
     "category": "Cameras",
@@ -4224,7 +4202,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Cason 48MP Digital Camera for Kids & Adults -Real Photo & Video Mini Camera for Photography 2.4\u201d Rotating Screen, Built in Games Kids Cameras for 5-15 Years Girls & Boys with 8 GB Sd Card -(White)",
+    "name": "Cason 48MP Digital Camera for Kids & Adults -Real Photo & Video Mini Camera for Photography 2.4” Rotating Screen, Built in Games Kids Cameras for 5-15 Years Girls & Boys with 8 GB Sd Card -(White)",
     "slug": "cason-48mp-digital-camera-for-kids-adults-real-photo-video-mini-camera-for-photo",
     "brand": "Generic",
     "category": "Cameras",
@@ -4268,7 +4246,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Storio Rechargeable Kids Camera Toy 3.0MP - Pink | 1080P Video Camera with 2-Inch Screen Supports 32GB with Games,Filters,Time-Lapse Educational Birthday Gift for Boys & Girls Age 3\u201312",
+    "name": "Storio Rechargeable Kids Camera Toy 3.0MP - Pink | 1080P Video Camera with 2-Inch Screen Supports 32GB with Games,Filters,Time-Lapse Educational Birthday Gift for Boys & Girls Age 3–12",
     "slug": "storio-rechargeable-kids-camera-toy-3-0mp-pink-1080p-video-camera-with-2-inch-sc",
     "brand": "Generic",
     "category": "Cameras",
@@ -4290,7 +4268,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Qubo Smart Cam 360\u00b0 3MP | No SD Card Required, Records Directly on Cloud | 2026 Edition - by Hero Group | STQC Certified | AI Person Detection | Intruder Alarm | Night Vision | Two-Way Talk",
+    "name": "Qubo Smart Cam 360° 3MP | No SD Card Required, Records Directly on Cloud | 2026 Edition - by Hero Group | STQC Certified | AI Person Detection | Intruder Alarm | Night Vision | Two-Way Talk",
     "slug": "qubo-smart-cam-360-3mp-no-sd-card-required-records-directly-on-cloud-2026-editio",
     "brand": "Generic",
     "category": "Cameras",
@@ -4312,7 +4290,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Toy Imagine Kids Digital Camera Toy 3.0MP 1080P Video Camera with 2-Inch Screen & 32GB Capacity USB Rechargeable with Games,Filters,Time-Lapse Educational Birthday Gift for Boys & Girls Age 3\u201312(Blue)",
+    "name": "Toy Imagine Kids Digital Camera Toy 3.0MP 1080P Video Camera with 2-Inch Screen & 32GB Capacity USB Rechargeable with Games,Filters,Time-Lapse Educational Birthday Gift for Boys & Girls Age 3–12(Blue)",
     "slug": "toy-imagine-kids-digital-camera-toy-3-0mp-1080p-video-camera-with-2-inch-screen-",
     "brand": "Generic",
     "category": "Cameras",
@@ -4598,17 +4576,6 @@
     "marketplace": "Blinkit"
   },
   {
-    "name": "Ear Cleaner Tool Kit",
-    "slug": "ear-cleaner-tool-kit",
-    "brand": "HashWOW",
-    "category": "Computer Components",
-    "price": 699.0,
-    "mrp": 1999.0,
-    "product_url": "https://blinkit.com/prn/x/prid/777379",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/5deb8dbe-bc12-42ed-8528-9e3a7be99661.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
     "name": "Metal Hair & Beard Trimmer (V-290)",
     "slug": "metal-hair-beard-trimmer-v-290",
     "brand": "VGR",
@@ -4683,50 +4650,6 @@
     "mrp": 1699.0,
     "product_url": "https://blinkit.com/prn/x/prid/750115",
     "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/a037656b-bfdf-4b6a-aaf5-2b98bc5be715.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
-    "name": "Simply Disposable Women's Razor",
-    "slug": "simply-disposable-women-s-razor",
-    "brand": "Gillette Venus",
-    "category": "Computer Components",
-    "price": 109.0,
-    "mrp": 109.0,
-    "product_url": "https://blinkit.com/prn/x/prid/117512",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/dc0fb396-8eb3-49d6-90a9-1c1472936023.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
-    "name": "Presto 2-Blade Smoother Shaving Men's Razor",
-    "slug": "presto-2-blade-smoother-shaving-men-s-razor",
-    "brand": "Gillette",
-    "category": "Computer Components",
-    "price": 128.0,
-    "mrp": 128.0,
-    "product_url": "https://blinkit.com/prn/x/prid/955",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/c004bb65-8cb0-477e-b08b-abc5c262e824.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
-    "name": "Sensi Smart 3 Men's Razor",
-    "slug": "sensi-smart-3-men-s-razor",
-    "brand": "Bombay Shaving Company",
-    "category": "Computer Components",
-    "price": 99.0,
-    "mrp": 149.0,
-    "product_url": "https://blinkit.com/prn/x/prid/533536",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/5f0a55f6-44e9-43f9-9a00-364e29811a70.jpg",
-    "marketplace": "Blinkit"
-  },
-  {
-    "name": "Guard Manual Shaving Men's Razor - with Blades",
-    "slug": "guard-manual-shaving-men-s-razor-with-blades",
-    "brand": "Gillette",
-    "category": "Computer Components",
-    "price": 133.0,
-    "mrp": 133.0,
-    "product_url": "https://blinkit.com/prn/x/prid/583499",
-    "image_url": "https://cdn.grofers.com/da/cms-assets/cms/product/a4f4455e-c0a2-487f-be4c-b801cc217f81.jpg",
     "marketplace": "Blinkit"
   },
   {
@@ -5126,7 +5049,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Ant Esports H950 Pro Wired Gaming Headset for PC, Xbox, PS4 & PS5, 7.1 USB Surround Sound Wired Headphones, 50mm Drivers, Mirror RGB LED, Omnidirectional Mic & Noise Isolating Ear Cups \u2013 Black",
+    "name": "Ant Esports H950 Pro Wired Gaming Headset for PC, Xbox, PS4 & PS5, 7.1 USB Surround Sound Wired Headphones, 50mm Drivers, Mirror RGB LED, Omnidirectional Mic & Noise Isolating Ear Cups – Black",
     "slug": "ant-esports-h950-pro-wired-gaming-headset-for-pc-xbox-ps4-ps5-7-1-usb-surround-s",
     "brand": "Generic",
     "category": "Smartphones",
@@ -5137,7 +5060,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "HyperX Cloud III\u2013Smartchoice Wired Gaming Over Ear Headset, Pc, Ps5, Xbox Series X|S, Angled 53Mm Drivers, Memory Foam, Durable Frame, Ultra-Clear 10Mm Mic, USB-C, USB-A, 3.5Mm\u2013Black/Red(727A9AA)",
+    "name": "HyperX Cloud III–Smartchoice Wired Gaming Over Ear Headset, Pc, Ps5, Xbox Series X|S, Angled 53Mm Drivers, Memory Foam, Durable Frame, Ultra-Clear 10Mm Mic, USB-C, USB-A, 3.5Mm–Black/Red(727A9AA)",
     "slug": "hyperx-cloud-iii-smartchoice-wired-gaming-over-ear-headset-pc-ps5-xbox-series-x-",
     "brand": "Generic",
     "category": "Smartphones",
@@ -5214,7 +5137,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Apple iPhone 17e 256 GB: 15.40 cm (6.1\u2033) Super Retina XDR Display, A19 Chip, All-Day Battery Life, 48MP Fusion Camera, 256GB Starting Storage; Soft Pink",
+    "name": "Apple iPhone 17e 256 GB: 15.40 cm (6.1″) Super Retina XDR Display, A19 Chip, All-Day Battery Life, 48MP Fusion Camera, 256GB Starting Storage; Soft Pink",
     "slug": "apple-iphone-17e-256-gb-15-40-cm-6-1-super-retina-xdr-display-a19-chip-all-day-b",
     "brand": "Generic",
     "category": "Smartphones",
@@ -5258,7 +5181,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Redmi Note 17 5G (Dark Night, 8GB RAM, 128GB ROM) | 8000mAh Battery + 45W Fast Charging | 6.99\" TrueColour AMOLED | Snapdragon 4 Gen 4 | 50MP Dual AI Camera | Corning\u00ae Gorilla\u00ae Glass 7i | IP65",
+    "name": "Redmi Note 17 5G (Dark Night, 8GB RAM, 128GB ROM) | 8000mAh Battery + 45W Fast Charging | 6.99\" TrueColour AMOLED | Snapdragon 4 Gen 4 | 50MP Dual AI Camera | Corning® Gorilla® Glass 7i | IP65",
     "slug": "redmi-note-17-5g-dark-night-8gb-ram-128gb-rom-8000mah-battery-45w-fast-charging-",
     "brand": "Generic",
     "category": "Smartphones",
@@ -5665,7 +5588,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "EvoFox Katana X2 FS Mechanical Gaming Keyboard | 3\u2011Pin Replaceable Clicky Blue Switches, Dynamic Backlighting, All Keys Anti\u2011Ghosting, Volume Knob, Copilot, Xbox Gamebar, Screenshot & More (Black)",
+    "name": "EvoFox Katana X2 FS Mechanical Gaming Keyboard | 3‑Pin Replaceable Clicky Blue Switches, Dynamic Backlighting, All Keys Anti‑Ghosting, Volume Knob, Copilot, Xbox Gamebar, Screenshot & More (Black)",
     "slug": "evofox-katana-x2-fs-mechanical-gaming-keyboard-3-pin-replaceable-clicky-blue-swi",
     "brand": "Generic",
     "category": "Computer Components",
@@ -5731,7 +5654,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "Ant Esports MK1200 Mini 60% Wired Mechanical Gaming Keyboard \u2013 Red Switch, Rainbow Backlit, 61 Keys, Anti-Ghosting, USB, Compact TKL \u2013 Compatible with Windows, macOS, PS5, Xbox, Laptop & PC (White)",
+    "name": "Ant Esports MK1200 Mini 60% Wired Mechanical Gaming Keyboard – Red Switch, Rainbow Backlit, 61 Keys, Anti-Ghosting, USB, Compact TKL – Compatible with Windows, macOS, PS5, Xbox, Laptop & PC (White)",
     "slug": "ant-esports-mk1200-mini-60-wired-mechanical-gaming-keyboard-red-switch-rainbow-b",
     "brand": "Generic",
     "category": "Laptops",
@@ -5775,7 +5698,7 @@
     "marketplace": "Amazon India"
   },
   {
-    "name": "EvoFox Katana X2 TKL Mechanical Gaming Keyboard | 3\u2011Pin Replaceable Silent Red Switches, Dynamic Backlighting, All Keys Anti\u2011Ghosting, Volume Knob, Copilot, Xbox Gamebar, Screenshot & More (White)",
+    "name": "EvoFox Katana X2 TKL Mechanical Gaming Keyboard | 3‑Pin Replaceable Silent Red Switches, Dynamic Backlighting, All Keys Anti‑Ghosting, Volume Knob, Copilot, Xbox Gamebar, Screenshot & More (White)",
     "slug": "evofox-katana-x2-tkl-mechanical-gaming-keyboard-3-pin-replaceable-silent-red-swi",
     "brand": "Generic",
     "category": "Computer Components",

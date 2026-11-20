@@ -38,6 +38,7 @@ async def list_products(
         .join(ProductVariant, ProductVariant.product_id == Product.id)
         .join(MarketplaceListing, MarketplaceListing.variant_id == ProductVariant.id)
         .join(Marketplace, Marketplace.id == MarketplaceListing.marketplace_id)
+        .where(MarketplaceListing.current_price > 0)
     )
 
     if category_slug:
@@ -72,7 +73,11 @@ async def list_products(
 
         mrp = float(v.mrp)
         price = float(l.current_price)
+        if price <= 0:
+            continue
         disc = round(((mrp - price) / mrp) * 100.0, 1) if mrp > price else 0.0
+        if disc > 90.0:
+            disc = 0.0
 
         pred = PricePredictionEngine.analyze_price(price, mrp, [price, mrp * 0.95, mrp])
         summaries.append(
@@ -150,12 +155,16 @@ async def get_product_detail(id_or_slug: str, db: AsyncSession = Depends(get_db)
 
         for l, mp in listings_rows:
             p = float(l.current_price)
+            if p <= 0:
+                continue
             all_prices.append(p)
             if p < min_price:
                 min_price = p
 
             mrp_val = float(l.original_mrp or v.mrp)
             disc = round(((mrp_val - p) / mrp_val) * 100.0, 1) if mrp_val > p else 0.0
+            if disc > 90.0:
+                disc = 0.0
 
             ls = MarketplaceListingSchema(
                 id=l.id,
