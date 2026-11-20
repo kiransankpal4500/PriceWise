@@ -10,6 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 def resolve_database_urls():
     env_url = os.environ.get("DATABASE_URL")
+    if env_url and os.name != "nt" and any(drive in env_url.lower() for drive in ["d:/", "c:/", "e:/"]):
+        env_url = None
+
     if env_url:
         sync_url = env_url.replace("+aiosqlite", "").replace("+asyncpg", "")
         return env_url, sync_url
@@ -63,10 +66,19 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     def fix_database_url(cls, v: str) -> str:
         if isinstance(v, str):
+            if os.name != "nt" and any(drive in v.lower() for drive in ["d:/", "c:/", "e:/"]):
+                return _DEFAULT_DB_URL
             if v.startswith("postgres://"):
                 return v.replace("postgres://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgresql://") and not v.startswith("postgresql+"):
                 return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
+    @field_validator("DATABASE_URL_SYNC", mode="before")
+    def fix_sync_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if os.name != "nt" and any(drive in v.lower() for drive in ["d:/", "c:/", "e:/"]):
+                return _DEFAULT_SYNC_DB_URL
         return v
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
