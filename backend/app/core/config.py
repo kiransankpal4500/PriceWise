@@ -24,15 +24,15 @@ def resolve_database_urls():
     # On Linux/Render, copy to /tmp to ensure guaranteed write permissions
     if os.name != "nt":
         tmp_db = Path("/tmp/pricewise.db")
-        if candidate_db.exists() and not tmp_db.exists():
-            import shutil
+        if candidate_db.exists():
             try:
-                shutil.copyfile(candidate_db, tmp_db)
-            except Exception:
-                pass
-        if tmp_db.exists():
-            posix_tmp = tmp_db.as_posix()
-            return f"sqlite+aiosqlite:///{posix_tmp}", f"sqlite:///{posix_tmp}"
+                import shutil
+                if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+                    shutil.copyfile(candidate_db, tmp_db)
+            except Exception as e:
+                print(f"Notice copying seed db to /tmp: {e}", flush=True)
+        posix_tmp = tmp_db.as_posix()
+        return f"sqlite+aiosqlite:///{posix_tmp}", f"sqlite:///{posix_tmp}"
 
     try:
         candidate_db.parent.mkdir(parents=True, exist_ok=True)
