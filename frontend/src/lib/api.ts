@@ -9,10 +9,13 @@ import {
   ChatResponse,
 } from "@/types";
 
+const PRODUCTION_RENDER_BACKEND = "https://pricewise-9cov.onrender.com";
+
 function getApiBaseUrl(): string {
   const backendUrl =
     process.env.NEXT_PUBLIC_BACKEND_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_API_URL ||
     process.env.BACKEND_URL;
 
   if (backendUrl) {
@@ -21,10 +24,14 @@ function getApiBaseUrl(): string {
   }
 
   if (typeof window !== "undefined") {
+    // In production on Vercel or any live host, connect directly to the Render backend
+    if (!window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
+      return `${PRODUCTION_RENDER_BACKEND}/api/v1`;
+    }
     return `${window.location.origin}/api/v1`;
   }
 
-  return "http://127.0.0.1:8000/api/v1";
+  return `${PRODUCTION_RENDER_BACKEND}/api/v1`;
 }
 
 function getAuthHeader(): Record<string, string> {

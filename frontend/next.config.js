@@ -14,7 +14,8 @@ const nextConfig = {
       process.env.BACKEND_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
-      "http://127.0.0.1:8000";
+      process.env.NEXT_API_URL ||
+      "https://pricewise-9cov.onrender.com";
     const backendTarget = rawTarget.replace(/\/api\/v1\/?$/, "").replace(/\/+$/, "");
     return [
       {

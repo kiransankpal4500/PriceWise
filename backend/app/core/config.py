@@ -8,6 +8,43 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
+def resolve_database_urls():
+    env_url = os.environ.get("DATABASE_URL")
+    if env_url:
+        sync_url = env_url.replace("+aiosqlite", "").replace("+asyncpg", "")
+        return env_url, sync_url
+
+    candidate_db = BASE_DIR / "pricewise.db"
+    if not candidate_db.exists():
+        for alt in [Path.cwd() / "backend" / "pricewise.db", Path.cwd() / "pricewise.db"]:
+            if alt.exists():
+                candidate_db = alt
+                break
+
+    # On Linux/Render, copy to /tmp to ensure guaranteed write permissions
+    if os.name != "nt":
+        tmp_db = Path("/tmp/pricewise.db")
+        if candidate_db.exists() and not tmp_db.exists():
+            import shutil
+            try:
+                shutil.copyfile(candidate_db, tmp_db)
+            except Exception:
+                pass
+        if tmp_db.exists():
+            posix_tmp = tmp_db.as_posix()
+            return f"sqlite+aiosqlite:///{posix_tmp}", f"sqlite:///{posix_tmp}"
+
+    try:
+        candidate_db.parent.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+    posix_path = candidate_db.resolve().as_posix()
+    return f"sqlite+aiosqlite:///{posix_path}", f"sqlite:///{posix_path}"
+
+
+_DEFAULT_DB_URL, _DEFAULT_SYNC_DB_URL = resolve_database_urls()
+
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "PriceWise"
     ENVIRONMENT: str = "development"
@@ -15,8 +52,8 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
 
     # Database
-    DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR.as_posix()}/pricewise.db"
-    DATABASE_URL_SYNC: str = f"sqlite:///{BASE_DIR.as_posix()}/pricewise.db"
+    DATABASE_URL: str = _DEFAULT_DB_URL
+    DATABASE_URL_SYNC: str = _DEFAULT_SYNC_DB_URL
 
     @field_validator("DATABASE_URL", mode="before")
     def fix_database_url(cls, v: str) -> str:
@@ -51,6 +88,8 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
+        "https://price-wise-azmu.vercel.app",
+        "https://pricewise.vercel.app",
     ]
 
     # Marketplace Scraping / Integration
