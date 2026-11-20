@@ -14,32 +14,37 @@ def resolve_database_urls():
         sync_url = env_url.replace("+aiosqlite", "").replace("+asyncpg", "")
         return env_url, sync_url
 
-    candidate_db = BASE_DIR / "pricewise.db"
-    if not candidate_db.exists():
-        for alt in [Path.cwd() / "backend" / "pricewise.db", Path.cwd() / "pricewise.db"]:
-            if alt.exists():
-                candidate_db = alt
-                break
+    # Check locations in order of preference
+    locations = [
+        Path.cwd() / "pricewise.db",
+        Path.cwd() / "backend" / "pricewise.db",
+        BASE_DIR / "pricewise.db",
+        Path("/tmp/pricewise.db"),
+    ]
+    for loc in locations:
+        if loc.exists() and loc.is_file() and loc.stat().st_size > 0:
+            try:
+                # Test writability
+                with open(loc, "a+b"):
+                    pass
+                p = loc.resolve().as_posix()
+                return f"sqlite+aiosqlite:///{p}", f"sqlite:///{p}"
+            except Exception:
+                pass
 
-    # On Linux/Render, copy to /tmp to ensure guaranteed write permissions
-    if os.name != "nt":
-        tmp_db = Path("/tmp/pricewise.db")
-        if candidate_db.exists():
+    # If none writable, copy seed db to /tmp/pricewise.db
+    tmp_path = Path("/tmp/pricewise.db")
+    for src in [Path.cwd() / "pricewise.db", Path.cwd() / "backend" / "pricewise.db", BASE_DIR / "pricewise.db"]:
+        if src.exists() and src.is_file() and src.stat().st_size > 0:
             try:
                 import shutil
-                if not tmp_db.exists() or tmp_db.stat().st_size == 0:
-                    shutil.copyfile(candidate_db, tmp_db)
-            except Exception as e:
-                print(f"Notice copying seed db to /tmp: {e}", flush=True)
-        posix_tmp = tmp_db.as_posix()
-        return f"sqlite+aiosqlite:///{posix_tmp}", f"sqlite:///{posix_tmp}"
+                shutil.copyfile(src, tmp_path)
+                p = tmp_path.as_posix()
+                return f"sqlite+aiosqlite:///{p}", f"sqlite:///{p}"
+            except Exception:
+                pass
 
-    try:
-        candidate_db.parent.mkdir(parents=True, exist_ok=True)
-    except Exception:
-        pass
-    posix_path = candidate_db.resolve().as_posix()
-    return f"sqlite+aiosqlite:///{posix_path}", f"sqlite:///{posix_path}"
+    return "sqlite+aiosqlite:///pricewise.db", "sqlite:///pricewise.db"
 
 
 _DEFAULT_DB_URL, _DEFAULT_SYNC_DB_URL = resolve_database_urls()
